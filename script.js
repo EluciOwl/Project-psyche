@@ -19,3 +19,9 @@ thoughtButton.addEventListener("click", () => {
   }
 });
 
+const homeButton =
+  document.querySelector("#home-button");
+
+homeButton.addEventListener("click", () => {
+  window.location.href = "index.html";
+});
