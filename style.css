@@ -7,11 +7,15 @@ body {
   justify-content: center;
   align-items: flex-start;
 
-  background:url("assets/images/ai-generated/HomeBackground.png");
+  background: url("assets/images/ai-generated/HomeBackground.png");
 
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;  
+  background-repeat: no-repeat;
+
+  /* start */
+  opacity: 0;
+  animation: fadeIn 2s ease forwards;
 }
 
 /* main content on home screen */
@@ -37,17 +41,15 @@ body {
 
   font-size: 42px;
   color: white;
-  
+
   border: none;
   border-radius: 30px;
 
-  background: linear-gradient(
-    135deg,
+  background: linear-gradient(135deg,
       rgba(0, 225, 255, 0.4),
       rgba(0, 225, 255, 0.6),
-      rgba(0, 225, 255, 0.8)
-  );
-  
+      rgba(0, 225, 255, 0.8));
+
   cursor: pointer;
 
   transition: all 0.25s ease;
@@ -57,8 +59,8 @@ body {
   transform: translateY(-2px);
 
   box-shadow:
-  0 0 20px rgba(0, 225, 255, 0.8),
-  0 0 35px rgba(0, 225, 255, 0.8);
+    0 0 20px rgba(0, 225, 255, 0.8),
+    0 0 35px rgba(0, 225, 255, 0.8);
 
   filter: brightness(1.1);
 }
@@ -67,7 +69,7 @@ body {
   transform: scale(0.85);
 
   box-shadow:
-  0 0 25px rgba(0, 225, 255, 0.8);
+    0 0 25px rgba(0, 225, 255, 0.8);
 }
 
 /* home button*/
@@ -86,6 +88,104 @@ body {
 }
 
 #home-button:hover {
-  filter: brightness(1.1);
-  transform: scale(1.005);
+  filter: brightness(1.25);
+  transform: scale(1.025);
 }
+
+#screen-2-thoughts {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+
+  background: url("assets/images/ai-generated/thoughtsBackground.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* button → controls background, border, cursor, transition | the frame */
+#home-thoughts-button {
+  margin-top: 30px;
+  
+  /* transparent 50% -> wrong syntax -> browser ignoring it -> set to default = white */
+  background-color: transparent;
+  border: none;
+  filter:saturate(0.9);
+
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+}
+
+/* img → only controls the image size | <img> picture inside the fram */
+#home-thoughts-button img {
+  height: 200px;
+}
+
+#home-thoughts-button:hover {
+  filter: brightness(1.15);
+  transform: scale(1.025);
+}
+
+#thought-input {
+  margin-top: 50px;
+
+  background: transparent;
+  font-size: 50px;
+  color: white;
+
+  width: 800px;
+  height: 100px;
+
+  border-radius: 50px;
+  border: 20px solid color-mix(in srgb, color-mix(in hsl, hsl(200, 100%, 22%) 20%, rgb(47, 0, 255) 80%) 20%, transparent);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(200 70% 10% / 0.5), rgba(255, 127, 80, 0)) border-box;
+
+  filter: brightness(1.5);
+}
+
+
+/* keyframes do from 0% to 100% */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+#thoughts-container {
+  font-size: 50px;
+}
+
+/* thought cards*/
+.thought-card {
+  position: relative;
+}
+
+
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.thought-cloud {
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+}
+
+.thought-cloud img {
+  width: 380px;
+}
+
+.thought-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
+  font-size: 32px;
+  text-align: center;
+}
+
