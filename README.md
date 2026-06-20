@@ -23,7 +23,7 @@ became the place where all of that comes together.
 I build, I break things, I figure out why, that's the loop.
 It's a work in progress🌱
 
-## 🧰Built with
+## 🧰 Built with
 
 - HTML
 - CSS
@@ -33,6 +33,9 @@ It's a work in progress🌱
 
 Actively building, one small feature at a time. Pushing to GitHub every day if possible.
 
+## 🐛 Bug Log
+
+Documenting every bug I solve and what I learn from it → [Bug Log](bugs/BUGS.md)
 
 ## 🗺️ Where this is going
 
