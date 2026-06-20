@@ -13,9 +13,13 @@
 ## 2026-06-20
 ### **Css** - Clouds overflow
 
+
 - **🐛** Text extends beyond the cloud image
+<br>![cloud overflow](bug-images/cloud-overflow.png)</br>
+
 - **🔍** font-size too big for cloud max-width
 - **🔧** Reduced font-size + added maxlength to input in thoughts.html + fixed image shape!
+<br>![cloud overflow fixed](bug-images/cloud-overflow-fixed.png)</br>
 - **💡** font-size, text width, and image size all have to agree. When text overflows, sometimes the fix is a better-shaped img, not more CSS.
 ---
 
