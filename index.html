@@ -10,35 +10,31 @@
   <script src="script.js" defer></script>
 </head>
 
-<body>
-  <div class="main-content">
+<body id="screen-1-home">
+  <button id="home-button">
+    <img
+      src="assets/images/ai-generated/home.png"
+      alt="home">
+  </button>
 
-    <button id="home-button">
-      <img
-        src="assets/images/ai-generated/home.png"
-        alt="home">
+  <div class="menu">
+    <button
+      id="thoughts-button"
+      class="menu-button active">
+      Thoughts
     </button>
 
-    <div class="menu">
-      <button
-        id="thoughts-button"
-        class="menu-button active">
-        Thoughts
-      </button>
+    <button
+      id="feeling-button"
+      class="menu-button">
+      Feelings
+    </button>
 
-      <button
-        id="feeling-button"
-        class="menu-button">
-        Feelings
-      </button>
-
-      <button
-        id="analyze-button"
-        class="menu-button">
-        Analyze
-      </button>
-    </div>
-
+    <button
+      id="analyze-button"
+      class="menu-button">
+      Analyze
+    </button>
   </div>
 </body>
 </html>
