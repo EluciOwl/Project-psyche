@@ -147,3 +147,27 @@ thoughtTextCloud.textContent = thoughtInput.value;
 - **🔍**: `%` height is measured against the PARENT's height. But `div`, `body`, `html` all default to `height: auto` → 80% of nothing = nothing. 
 - **🔧**: build the chain from the top → `html, body { height: 100%; }`, `html` is the special link, its 100% measures against the viewport, then height flows down html → body → child
 - **💡**: percentage heights need an unbroken chain of real heights all the way up to `<html>`. `html` is the one that touches the screen.
+
+## 2026-06-27
+
+### **`JS`** - Cannot read properties of null (reading `appendChild`)
+
+- **🐛**: Crash on emotions.html when rebuilding clouds.
+
+![done button no push](/bugs/bug-images/read-properties-of-null.png)
+
+- **🔍**: `thoughtsContainer` is null, because it only exists on thoughts.html → Cannot read `appendChild` of null
+```JS 
+const thoughtsContainer = document.getElementById("thoughts-container");
+```
+- **🔧**: Pass container in as a parameter so the caller decides where:
+```JS
+function createFloatingClouds(input, container) {
+  ...
+  container.appendChild(divClouds); // whoever calls decides where
+}
+
+createFloatingClouds(thoughtInput.value, thoughtsContainer);                      // thoughts page
+createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);  // emotions page
+```
+- **💡**: `Cannot read properties of null` almost always means an element wasn't found 
