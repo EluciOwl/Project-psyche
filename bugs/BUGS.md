@@ -202,7 +202,7 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 
 ![drag offset with clientx clienty](/bugs/bug-images/drag-offset-with-clientx-clienty.png)
 
-## 2026-06-28
+## 2026-06-29
 ### **`CSS`** - Clouds shrink at the right edge
 
 - **🐛**: Dragging a cloud toward the right edge made it squish narrower. Left side stayed full size.
