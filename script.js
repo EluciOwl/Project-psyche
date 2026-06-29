@@ -7,6 +7,11 @@ let thoughtsArray = [];
 
 const MAX_THOUGHTS = 4;
 
+// Position of the recreated Clouds on emotions.html
+let topSpacing = 200;
+let rightSpacing = 80;
+let gapBetween =  180
+
 // Naviagtions
 function IndexNavigation() {
   const homeButton = document.getElementById("home-button");
@@ -150,7 +155,7 @@ function thoughtsRecreateOnDocEmotions() {
     // || [] protects .length from crashing if parse gave nothing!
     thoughtsArray = JSON.parse(thoughtsJson) || [];
 
-    // cloud i'm dragging right now
+    // that cloud i'm dragging right now
     let activeCloud = null;
     // dragging?
     let isDragging = false;
@@ -159,22 +164,20 @@ function thoughtsRecreateOnDocEmotions() {
     let offsetX = 0;
     let offsetY = 0;
 
-    // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
-    document.addEventListener("mousemove", (event) => {
-      if (!isDragging) return;
-        // that spot where I klicked
-        activeCloud.style.left = (event.clientX - offsetX) + "px";
-        activeCloud.style.top = (event.clientY - offsetY) + "px";
-    })
-
-    // when I'm not holding that one klick anymore, then release the cloud
-    document.addEventListener("mouseup", (event) => {
-      isDragging = false;
-    })
+    // gap between the recreated Clouds
+    let gapHeight = 0;
 
     for (let thoughtsNumber = 0; thoughtsNumber < thoughtsArray.length; thoughtsNumber++) {
       // Store created cloud
       const cloud = createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
+
+      // Start position of recreated Clouds at the right of the screen
+      let positionCloud = cloud;
+      let topNew = topSpacing + gapHeight + "px";
+      positionCloud.style.right = rightSpacing + "px";
+      positionCloud.style.top = topNew;
+      gapHeight += gapBetween;
+
 
       // When I klick, the returned clouds I built before getting chatched by Eventlistener
       // When the event happens, I'm dragging
@@ -193,6 +196,20 @@ function thoughtsRecreateOnDocEmotions() {
         offsetY = event.clientY - rect.top;
       });
     }
+
+    // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
+    document.addEventListener("mousemove", (event) => {
+      if (!isDragging) return;
+      // that spot where I klicked
+      activeCloud.style.left = (event.clientX - offsetX) + "px";
+      activeCloud.style.top = (event.clientY - offsetY) + "px";
+    })
+
+    // when I'm not holding that one klick anymore, then release the cloud
+    document.addEventListener("mouseup", (event) => {
+      isDragging = false;
+    })
+
   }
 }
 

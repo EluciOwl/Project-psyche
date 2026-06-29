@@ -200,4 +200,15 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔧**: On mousedown, measure how far INSIDE the cloud I clicked, using`getBoundingClientRect()` (gives the cloud's corner position on screen): offsetX = event.clientX - rect.left offsetY = event.clientY - rect.top Then on mousemove, place the cloud at (mouse - offset) so the cursor stays on the exact spot I grabbed.
 - **💡**: client = mouse from screen edge. rect = cloud from screen edge. offset = the gap between them = how deep I grabbed. Subtract it back while moving. 
 
-![Sparkle particles stacked](/bugs/bug-images/drag-offset-with-clientx-clienty.png)
+![drag offset with clientx clienty](/bugs/bug-images/drag-offset-with-clientx-clienty.png)
+
+## 2026-06-28
+### **`CSS`** - Clouds shrink at the right edge
+
+- **🐛**: Dragging a cloud toward the right edge made it squish narrower. Left side stayed full size.
+
+![clouds shrink at right edge](/bugs/bug-images/clouds-shrink-at-right-edge.png)
+
+- **🔍**: `.thought-cloud` had only `max-width: 400px`, no fixed `width`. `max-width` is a ceiling, not a fixed size, so an `absolute` + shrink-to-fit element squeezes to fit the space left before the edge.
+- **🔧**: Gave the emotion clouds a fixed `width: 400px` (scoped to `.screen-3-emotions .thought-cloud`). Now they can't shrink, they run past the edge instead (overflow clips it cleanly).
+- **💡**: When something squishes near an edge, suspect a missing fixed `width`.

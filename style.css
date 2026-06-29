@@ -68,9 +68,22 @@ body {
   gap: 5px;
 }
 
+#cloud-drop-zone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;  
+  height: 250px;
+  border: 2px dashed rgba(255, 255, 255, 0.4); 
+  pointer-events: none; 
+}
+
 .screen-3-emotions  .thought-cloud {
   position: absolute;
   cursor: grab;
+  /* max-width: 400px = "never wider than 400, but smaller is allowed" → it can shrink. width: 400px = "always exactly 400" → it can't shrink or grow. */
+  width: 400px;
 }
 
 
