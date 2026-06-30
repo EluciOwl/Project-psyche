@@ -212,3 +212,18 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔍**: `.thought-cloud` had only `max-width: 400px`, no fixed `width`. `max-width` is a ceiling, not a fixed size, so an `absolute` + shrink-to-fit element squeezes to fit the space left before the edge.
 - **🔧**: Gave the emotion clouds a fixed `width: 400px` (scoped to `.screen-3-emotions .thought-cloud`). Now they can't shrink, they run past the edge instead (overflow clips it cleanly).
 - **💡**: When something squishes near an edge, suspect a missing fixed `width`.
+
+
+## 2026-06-30
+### **`JS`** - Snap broke in windowed mode
+
+- **🐛**: Cloud snapped to the right spot fullscreen but wrong spot when the window was smaller.
+
+![snap broke in windowed mode](/bugs/bug-images/snap-broke-in-windowed-mode.png)
+
+- **🔍**: `getBoundingClientRect()` gives viewport coords, but `position: absolute` + `style.left` placed the cloud relative to the page. The two frames drift apart when the window changes.
+- **🔧**: Centered the cloud with `left: 50%; top: 50%; transform: translate(-50%,-50%)`, the SAME way the zone centers itself in CSS. Matching method = always agree, any window size.
+- **💡**: If two things must line up, give them the SAME positioning method. `getBoundingClientRect` is a snapshot of "right now", measure it fresh, at the moment you need it.
+
+
+

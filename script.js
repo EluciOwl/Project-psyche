@@ -10,7 +10,7 @@ const MAX_THOUGHTS = 4;
 // Position of the recreated Clouds on emotions.html
 let topSpacing = 200;
 let rightSpacing = 80;
-let gapBetween =  180
+let gapBetween = 180
 
 // Naviagtions
 function IndexNavigation() {
@@ -167,6 +167,9 @@ function thoughtsRecreateOnDocEmotions() {
     // gap between the recreated Clouds
     let gapHeight = 0;
 
+    // when cloud in zone
+    let cloudInZone = null;
+
     for (let thoughtsNumber = 0; thoughtsNumber < thoughtsArray.length; thoughtsNumber++) {
       // Store created cloud
       const cloud = createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
@@ -205,11 +208,33 @@ function thoughtsRecreateOnDocEmotions() {
       activeCloud.style.top = (event.clientY - offsetY) + "px";
     })
 
+
+    const cloudDropZone = document.getElementById("cloud-drop-zone");
+      const zoneRect = cloudDropZone.getBoundingClientRect();
     // when I'm not holding that one klick anymore, then release the cloud
     document.addEventListener("mouseup", (event) => {
       isDragging = false;
-    })
 
+      let mouseIsInZone =
+        // is the mouse inside the box?
+        event.clientX > zoneRect.left &&
+        event.clientX < zoneRect.right &&
+        event.clientY > zoneRect.top &&
+        event.clientY < zoneRect.bottom
+
+      if (mouseIsInZone) {;
+        if (cloudInZone) {
+          return;
+        }
+        cloudInZone = activeCloud
+        activeCloud.classList.add("active-cloud");
+        const activeCloudRect = activeCloud.getBoundingClientRect();
+        // centering
+        activeCloud.style.left = "50%";
+        activeCloud.style.top = "50%";
+        activeCloud.style.transform = "translate(-50%, -50%)";
+      }
+    })
   }
 }
 
