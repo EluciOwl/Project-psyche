@@ -12,6 +12,7 @@ let topSpacing = 200;
 let rightSpacing = 80;
 let gapBetween = 180
 
+let emotionsAmount = 10;
 // Naviagtions
 function IndexNavigation() {
   const homeButton = document.getElementById("home-button");
@@ -129,8 +130,10 @@ function featureThoughts() {
       // when browser gives me Enter -> div, img, span
       if (event.key === "Enter" && inputCounter < MAX_THOUGHTS) {
         inputCounter++;
+
         counterAppearing(thoughtCounter, inputCounter);
         createFloatingClouds(thoughtInput.value, thoughtsContainer);
+
         thoughtsArray.push(thoughtInput.value);
         // my array  ->  JSON.stringify  ->  a JSON string  ->  localStorage holds it
         localStorage.setItem("thoughts", JSON.stringify(thoughtsArray));
@@ -210,7 +213,7 @@ function thoughtsRecreateOnDocEmotions() {
 
 
     const cloudDropZone = document.getElementById("cloud-drop-zone");
-      const zoneRect = cloudDropZone.getBoundingClientRect();
+    const zoneRect = cloudDropZone.getBoundingClientRect();
     // when I'm not holding that one klick anymore, then release the cloud
     document.addEventListener("mouseup", (event) => {
       isDragging = false;
@@ -222,7 +225,8 @@ function thoughtsRecreateOnDocEmotions() {
         event.clientY > zoneRect.top &&
         event.clientY < zoneRect.bottom
 
-      if (mouseIsInZone) {;
+      if (mouseIsInZone) {
+        ;
         if (cloudInZone) {
           return;
         }
@@ -262,6 +266,19 @@ function createFloatingClouds(input, container) {
   return divClouds;
 }
 
+function emotionsCreation() {
+  const emotionsContainer = document.getElementById("emotions-container");
+  if (emotionsContainer) {
+
+    for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
+      const emotion = document.createElement("div");
+      emotion.classList.add("emotion");
+
+      emotionsContainer.appendChild(emotion);
+    }
+  }
+}
+
 
 //order matters inside a function, not between functions.
 function init() {
@@ -273,6 +290,8 @@ function init() {
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
 
+  emotionsCreation();
+
   // Visual effects
   appearingInputText();
 }
@@ -280,3 +299,4 @@ function init() {
 // only run init when HTML is fullry parsed!  //defer -> also wait's until HTML is parsed -> covers globals  //without defer, globals -> null
 // defer makes the whole script wait for DOM! -> dealy -> saves globals form grabbing -> null
 document.addEventListener("DOMContentLoaded", init);
+

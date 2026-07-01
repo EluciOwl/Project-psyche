@@ -70,13 +70,19 @@ body {
 
 #cloud-drop-zone {
   position: absolute;
+  pointer-events: none; 
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 600px;  
   height: 250px;
-  border: 2px dashed rgba(255, 255, 255, 0.4); 
-  pointer-events: none; 
+  border-radius: 25%;
+
+  border: 2px dashed rgba(0, 255, 221, 0.5);
+  background: linear-gradient(
+    rgba(0, 195, 255, 0.2)
+  );
+  filter: blur(5px);
 }
 
 
@@ -94,6 +100,29 @@ body {
   width: 400px;
 }
 
+#emotions-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  height: 600px;
+  width: 400px;
+  margin-left: 80px;
+
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.171)
+  );
+  backdrop-filter: blur(2px);
+  border-radius: 5%;
+  gap: 10px;
+}
+
+.emotion {
+  background-color: rgb(0, 204, 255);
+  min-width: 100px;
+  height: 50px;
+  border-radius: 10%;
+
+}
 
 .thought-text-cloud {   
   display: block;
