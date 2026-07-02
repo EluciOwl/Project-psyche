@@ -22,16 +22,15 @@ body {
 }
 
 .selection-menu {
-  margin-top: 180px;
+  margin-top: 10vh;
   
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 45px;
+  gap: 5vh;
 }
 
 #thoughts-input-row { 
-  margin-top: 2.5%;
   display: flex;
   justify-content: center;
   justify-items: center;
@@ -41,16 +40,18 @@ body {
 
 #thoughts-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 7.5%
+  margin-top: 5%;
+  gap: 10% 5%;
 }
 
 .thought-cloud {  
   position: relative;
   display: inline-block;
-  margin-left: 20px;
   width: 400px;
   animation: floatCloud 4s ease-in-out infinite;
+
 }
 
 .thought-cloud img {
@@ -65,7 +66,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 5px;
 }
 
 #cloud-drop-zone {
@@ -106,14 +106,16 @@ body {
 
   height: 600px;
   width: 400px;
-  margin-left: 80px;
+  margin-left: 5vh;
+  margin-bottom: 5vh;
 
   background: linear-gradient(
     rgba(255, 255, 255, 0.171)
   );
   backdrop-filter: blur(2px);
   border-radius: 5%;
-  gap: 10px;
+  gap: 2% 10%;
+  padding: 2.5%;
 }
 
 .emotion {
@@ -125,10 +127,9 @@ body {
 }
 
 .thought-text-cloud {   
-  display: block;
   text-align: left;
   word-break: break-word;
-  width: 335px;
+  width: 30vh;
   
   /* position set -> top, bottom, left, right does work now!*/
   /* absolute -> Elemnt taken out of normal flow */
@@ -140,7 +141,7 @@ body {
   transform: translate(-50%, -50%);
 
   color: black;
-  font-size: 32px;
+  font-size: 180%;
 }
 
 
@@ -199,10 +200,10 @@ body {
 }
 
 #home-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 5vh;
   /*sets width to, auto omitted */
-  height: 150px;
-  margin-bottom: 50px;
-  scale: 0.45;
 
 
   background: transparent;
@@ -214,17 +215,20 @@ body {
   transition: all 0.4s ease-in-out;
 }
 
+#home-button img {
+  width: 60vh;
+}
+
 #home-button:hover {
   filter: brightness(1.25);
   transform: scale(1.025);
 }
 
 .home-colored-button {
-  margin: 0;
   display: flex;
   align-self: center;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  margin-top: 5vh;
+  margin-bottom: 10vh;
   background-color: transparent;
   border: none;
   filter:saturate(0.9);
@@ -260,7 +264,7 @@ body {
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 
-  padding:  35px 10px;
+  padding:  20% 2.5%;
   visibility: hidden;
 }
 

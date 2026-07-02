@@ -187,60 +187,82 @@ function thoughtsRecreateOnDocEmotions() {
 
       // When I klick, the returned clouds I built before getting chatched by Eventlistener
       // When the event happens, I'm dragging
-      cloud.addEventListener("mousedown", (event) => {
-        activeCloud = cloud;
-        isDragging = true;
+      function press(on) {
+        cloud.addEventListener(on, (event) => {
+          activeCloud = cloud;
+          isDragging = true;
 
-        // No 🚫 "can't drop here-Symbol" is appearing!
-        event.preventDefault();
+          // No 🚫 "can't drop here-Symbol" is appearing!
+          event.preventDefault();
 
-        // hands back an object with measuremtns -> rectangle
-        const rect = cloud.getBoundingClientRect();
-        // rect.left -> distance from screen's left edge to cloud's left edge (px)
-        offsetX = event.clientX - rect.left;
-        // rect.top -> distance from screen's top edge to cloud's top edge (px)
-        offsetY = event.clientY - rect.top;
-      });
-    }
+          // hands back an object with measuremtns -> rectangle
+          const rect = cloud.getBoundingClientRect();
+          if (event.touches) {
+            offsetX = event.touches[0].clientX - rect.left;
+            offsetY = event.touches[0].clientY - rect.top;
 
-    // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
-    document.addEventListener("mousemove", (event) => {
-      if (!isDragging) return;
-      // that spot where I klicked
-      activeCloud.style.left = (event.clientX - offsetX) + "px";
-      activeCloud.style.top = (event.clientY - offsetY) + "px";
-    })
-
-
-    const cloudDropZone = document.getElementById("cloud-drop-zone");
-    const zoneRect = cloudDropZone.getBoundingClientRect();
-    // when I'm not holding that one klick anymore, then release the cloud
-    document.addEventListener("mouseup", (event) => {
-      isDragging = false;
-
-      let mouseIsInZone =
-        // is the mouse inside the box?
-        event.clientX > zoneRect.left &&
-        event.clientX < zoneRect.right &&
-        event.clientY > zoneRect.top &&
-        event.clientY < zoneRect.bottom
-
-      if (mouseIsInZone) {
-        ;
-        if (cloudInZone) {
-          return;
-        }
-        cloudInZone = activeCloud
-        activeCloud.classList.add("active-cloud");
-        const activeCloudRect = activeCloud.getBoundingClientRect();
-        // centering
-        activeCloud.style.left = "50%";
-        activeCloud.style.top = "50%";
-        activeCloud.style.transform = "translate(-50%, -50%)";
+          } else {
+            // rect.left -> distance from screen's left edge to cloud's left edge (px)
+            offsetX = event.clientX - rect.left;
+            // rect.top -> distance from screen's top edge to cloud's top edge (px)
+            offsetY = event.clientY - rect.top;
+          }
+        });
       }
-    })
+      function motion(move) {
+        // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
+        document.addEventListener(move, (event) => {
+          if (!isDragging) return;
+          // that spot where I klicked
+          if (event.touches) {
+            activeCloud.style.left = (event.touches[0].clientX - offsetX) + "px";
+            activeCloud.style.top = (event.touches[0].clientY - offsetY) + "px";
+          } else {
+            activeCloud.style.left = (event.clientX - offsetX) + "px";
+            activeCloud.style.top = (event.clientY - offsetY) + "px";
+
+          }
+        })
+      }
+
+      function letGo(off) {
+        const cloudDropZone = document.getElementById("cloud-drop-zone");
+        const zoneRect = cloudDropZone.getBoundingClientRect();
+        // when I'm not holding that one klick anymore, then release the cloud
+        document.addEventListener(off, (event) => {
+          isDragging = false;
+
+          let mouseIsInZone =
+            // is the mouse inside the box?
+            event.clientX > zoneRect.left &&
+            event.clientX < zoneRect.right &&
+            event.clientY > zoneRect.top &&
+            event.clientY < zoneRect.bottom
+
+          if (mouseIsInZone) {
+            ;
+            if (cloudInZone) {
+              return;
+            }
+            cloudInZone = activeCloud
+            activeCloud.classList.add("active-cloud");
+            const activeCloudRect = activeCloud.getBoundingClientRect();
+            // centering
+            activeCloud.style.left = "50%";
+            activeCloud.style.top = "50%";
+            activeCloud.style.transform = "translate(-50%, -50%)";
+          }
+        })
+      }
+      // mouse
+      press("mousedown"); motion("mousemove"); letGo("mouseup");
+
+      // touch
+      press("touchstart"); motion("touchmove"); letGo("touchend");
+    }
   }
 }
+
 
 // Creation
 function createFloatingClouds(input, container) {
