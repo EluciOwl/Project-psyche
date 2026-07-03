@@ -8,9 +8,9 @@ let thoughtsArray = [];
 const MAX_THOUGHTS = 4;
 
 // Position of the recreated Clouds on emotions.html
-let topSpacing = 200;
-let rightSpacing = 80;
-let gapBetween = 180
+let topSpacing = 20;
+let rightSpacing = 10;
+let gapBetween = 20;
 
 let emotionsAmount = 10;
 // Naviagtions
@@ -167,6 +167,7 @@ function thoughtsRecreateOnDocEmotions() {
     let offsetX = 0;
     let offsetY = 0;
 
+    let vh = window.innerHeight * 0.01;
     // gap between the recreated Clouds
     let gapHeight = 0;
 
@@ -179,12 +180,12 @@ function thoughtsRecreateOnDocEmotions() {
 
       // Start position of recreated Clouds at the right of the screen
       let positionCloud = cloud;
-      let topNew = topSpacing + gapHeight + "px";
-      positionCloud.style.right = rightSpacing + "px";
+      let topNew = topSpacing + gapHeight + "vh";
+      positionCloud.style.right = rightSpacing + "vh";
       positionCloud.style.top = topNew;
       gapHeight += gapBetween;
 
-
+      
       // When I klick, the returned clouds I built before getting chatched by Eventlistener
       // When the event happens, I'm dragging
       function press(on) {

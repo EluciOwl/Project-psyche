@@ -23,7 +23,8 @@ body {
 
 .selection-menu {
   margin-top: 10vh;
-  
+  height: 55vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,22 +37,22 @@ body {
   justify-items: center;
   align-items: flex-end;
   gap: 2.5%;
+
 }
 
 #thoughts-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 5%;
-  gap: 10% 5%;
+  margin-top: 10vh;
+  gap: 2.5%;
 }
 
 .thought-cloud {  
   position: relative;
   display: inline-block;
-  width: 400px;
+  width: 20vw;
   animation: floatCloud 4s ease-in-out infinite;
-
 }
 
 .thought-cloud img {
@@ -65,7 +66,7 @@ body {
 #thoughts-collected-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 #cloud-drop-zone {
@@ -74,8 +75,8 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;  
-  height: 250px;
+  width: 30vw;  
+  height: 25vh;
   border-radius: 25%;
 
   border: 2px dashed rgba(0, 255, 221, 0.5);
@@ -87,7 +88,7 @@ body {
 
 
 .screen-3-emotions .thought-cloud.active-cloud {
-  width: 600px;
+  width: 30vw;
   margin: 0;
   animation: none;
   pointer-events: none;
@@ -97,16 +98,16 @@ body {
   position: absolute;
   cursor: grab;
   /* max-width: 400px = "never wider than 400, but smaller is allowed" → it can shrink. width: 400px = "always exactly 400" → it can't shrink or grow. */
-  width: 400px;
+  width: 20vw;
 }
 
 #emotions-container {
   display: flex;
   flex-wrap: wrap;
 
-  height: 600px;
-  width: 400px;
-  margin-left: 5vh;
+  height: 40vh;
+  width: 20vw;
+  margin-left: 5vw;
   margin-bottom: 5vh;
 
   background: linear-gradient(
@@ -120,8 +121,8 @@ body {
 
 .emotion {
   background-color: rgb(0, 204, 255);
-  min-width: 100px;
-  height: 50px;
+  min-width: 5vw;
+  height: 5vh;
   border-radius: 10%;
 
 }
@@ -129,7 +130,7 @@ body {
 .thought-text-cloud {   
   text-align: left;
   word-break: break-word;
-  width: 30vh;
+  width: 15vw;
   
   /* position set -> top, bottom, left, right does work now!*/
   /* absolute -> Elemnt taken out of normal flow */
@@ -141,7 +142,7 @@ body {
   transform: translate(-50%, -50%);
 
   color: black;
-  font-size: 180%;
+  font-size: 2vw;
 }
 
 
@@ -163,14 +164,15 @@ body {
 
 /* ===== BUTTONS ===== */
 .menu-button {
-  width: 325px;
-  height: 140px;
+  width: 20%;
+  height: 50%;
 
-  font-size: 50px;
+  font-size: 6vh;
+  overflow:hidden;
   color: white;
 
   border: none;
-  border-radius: 30px;
+  border-radius: 5vh;
 
   background: linear-gradient(135deg,
       rgba(0, 225, 255, 0.4),
@@ -203,8 +205,7 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 5vh;
-  /*sets width to, auto omitted */
-
+  margin-bottom: 2vh;
 
   background: transparent;
   border: none;
@@ -216,7 +217,7 @@ body {
 }
 
 #home-button img {
-  width: 60vh;
+  width: 85vh;
 }
 
 #home-button:hover {
@@ -239,7 +240,7 @@ body {
 
 /* img → only controls the image size | <img> picture inside the fram */
 .home-colored-button img {
-  height: 175px;
+  height: 25vh;
 }
 
 .home-colored-button:hover {
@@ -253,8 +254,8 @@ body {
 }
 
 #ready-button {
-  width: 200px;
-  font-size: 60px;
+  width: 20vh;
+  font-size: 6vh;
   color: rgba(222, 139, 255, 0.5);
 
   border: none;
@@ -289,11 +290,11 @@ body {
 #thought-counter {
   margin: 0;
   text-align: center;
-  font-size: 100px;
-  width:200px;
+  font-size: 10vh;
+  width: 20vh;
 
   border-radius: 10%;
-  padding:  12.5px;
+  padding:  1%;
 
   background:
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
@@ -313,14 +314,14 @@ body {
 /* ===== INPUT ===== */
 #thought-input-box {
   background: transparent;
-  font-size: 50px;
+  font-size: 3vw;
   color: white;
 
-  width: 800px;
-  height: 100px;
+  width: 50%;
+  height: 80%;
 
-  border-radius: 50px;
-  border: 20px solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
+  border-radius: 2vw;
+  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
   background:
     linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.05)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.5), rgba(236, 93, 255, 0.2)) border-box;
