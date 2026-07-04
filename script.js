@@ -13,6 +13,7 @@ let rightSpacing = 10;
 let gapBetween = 20;
 
 let emotionsAmount = 10;
+const EMOTIONS = ["Happy", "Calm", "Proud", "Hopeful", "Loved", "Sad", "Angry", "Anxious", "Ashamed", "Lonely"]
 // Naviagtions
 function IndexNavigation() {
   const homeButton = document.getElementById("home-button");
@@ -151,9 +152,9 @@ function featureThoughts() {
   }
 }
 function thoughtsRecreateOnDocEmotions() {
-  const thoughtsCollectedContainer = document.getElementById("thoughts-collected-container");
+  const screenEmotions = document.querySelector(".screen-3-emotions");
 
-  if (thoughtsCollectedContainer) {
+  if (screenEmotions) {
     let thoughtsJson = localStorage.getItem("thoughts");
     // || [] protects .length from crashing if parse gave nothing!
     thoughtsArray = JSON.parse(thoughtsJson) || [];
@@ -168,24 +169,41 @@ function thoughtsRecreateOnDocEmotions() {
     let offsetY = 0;
 
     let vh = window.innerHeight * 0.01;
+    let vw = window.innerWidth * 0.01;
+
     // gap between the recreated Clouds
     let gapHeight = 0;
 
     // when cloud in zone
     let cloudInZone = null;
+    const thoughtRelease = document.getElementById("thought-release");
+    const cloudDropZone = document.getElementById("cloud-drop-zone");
+
+    if (thoughtRelease) {
+      thoughtRelease.addEventListener("click", () => {
+        cloudInZone.style.top = cloudInZone.dataset.cloudTop;
+        cloudInZone.style.right = cloudInZone.dataset.cloudRight;
+        cloudInZone.style.left = "";
+        cloudInZone.classList.remove("active-cloud");
+        cloudDropZone.style.visibility = "";
+        cloudInZone = null;
+      })
+    }
 
     for (let thoughtsNumber = 0; thoughtsNumber < thoughtsArray.length; thoughtsNumber++) {
       // Store created cloud
-      const cloud = createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
+      const cloud = createFloatingClouds(thoughtsArray[thoughtsNumber], screenEmotions);
 
       // Start position of recreated Clouds at the right of the screen
-      let positionCloud = cloud;
-      let topNew = topSpacing + gapHeight + "vh";
-      positionCloud.style.right = rightSpacing + "vh";
-      positionCloud.style.top = topNew;
+      cloud.dataset.cloudTop = topSpacing + gapHeight + "vh";
+      cloud.style.top = cloud.dataset.cloudTop;
+
+      cloud.dataset.cloudRight = rightSpacing + "vh";
+      cloud.style.right = cloud.dataset.cloudRight;
+
       gapHeight += gapBetween;
 
-      
+
       // When I klick, the returned clouds I built before getting chatched by Eventlistener
       // When the event happens, I'm dragging
       function press(on) {
@@ -227,12 +245,11 @@ function thoughtsRecreateOnDocEmotions() {
       }
 
       function letGo(off) {
-        const cloudDropZone = document.getElementById("cloud-drop-zone");
         const zoneRect = cloudDropZone.getBoundingClientRect();
         // when I'm not holding that one klick anymore, then release the cloud
         document.addEventListener(off, (event) => {
+          if (!isDragging) return;
           isDragging = false;
-
           let mouseIsInZone =
             // is the mouse inside the box?
             event.clientX > zoneRect.left &&
@@ -241,10 +258,11 @@ function thoughtsRecreateOnDocEmotions() {
             event.clientY < zoneRect.bottom
 
           if (mouseIsInZone) {
-            ;
             if (cloudInZone) {
               return;
             }
+            thoughtRelease.style.visibility = "visible";
+            cloudDropZone.style.visibility = "hidden";
             cloudInZone = activeCloud
             activeCloud.classList.add("active-cloud");
             const activeCloudRect = activeCloud.getBoundingClientRect();
@@ -292,12 +310,17 @@ function createFloatingClouds(input, container) {
 function emotionsCreation() {
   const emotionsContainer = document.getElementById("emotions-container");
   if (emotionsContainer) {
-
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
-      const emotion = document.createElement("div");
-      emotion.classList.add("emotion");
+      const emotionBox = document.createElement("div");
+      emotionBox.classList.add("emotion-Box");
 
-      emotionsContainer.appendChild(emotion);
+      const emotionText = document.createElement("span")
+      emotionText.classList.add("emotion-text");
+
+      emotionText.textContent = EMOTIONS[emotionCounter];
+
+      emotionBox.appendChild(emotionText);
+      emotionsContainer.appendChild(emotionBox);
     }
   }
 }

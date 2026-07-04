@@ -225,5 +225,17 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔧**: Centered the cloud with `left: 50%; top: 50%; transform: translate(-50%,-50%)`, the SAME way the zone centers itself in CSS. Matching method = always agree, any window size.
 - **💡**: If two things must line up, give them the SAME positioning method. `getBoundingClientRect` is a snapshot of "right now", measure it fresh, at the moment you need it.
 
+## 2026-07-04
+### **`JS`** - Release button moved the wrong cloud
 
+- **🐛**: Clicking `releaseButton` cloud jumped to cloud 4's spot
+- **🔍**: `cloud` is the loop's variable. all clouds got their position data attached. click listener reads `cloud.dataset` (the last created one in that loop). Need to read the snapped ones.
+- **🔧**: Use `cloudInZone.dataset`, that leads to the current reference needed. For that cloud which is actually in the Zone not the last built `cloud`
+- **💡**: References: many "notes" can point at houses → read the "note" that matches the job.
 
+### **`JS`** - Release button moved the cloud to the wrong direction
+
+- **🐛**: clicking release → cloud jumped to the left side
+- **🔍**: `style.left = ...cloudTop`, a top value written into left
+- **🔧**: `style.top` gets the top value; `left` gets wiped with "" (starting position uses `right`)
+- **💡**: Two bugs can stack on the same lines; fixing one reveals the other
