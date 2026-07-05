@@ -239,3 +239,16 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔍**: `style.left = ...cloudTop`, a top value written into left
 - **🔧**: `style.top` gets the top value; `left` gets wiped with "" (starting position uses `right`)
 - **💡**: Two bugs can stack on the same lines; fixing one reveals the other
+
+
+## 2026-07-05
+### **`JS`** - Stacked mouseup listeners → 4x null crash on empty click
+
+- **🐛**: Every empty click on the page → 4x console error:
+
+![uncaught TypeError null style](/bugs/bug-images/uncaught-typeerror-null-style.png)
+
+- **🔍**: `activeCloud.style.cursor` ran on every mouseup, but before the first grap, `activeCloud` is still `null`. That error appeared 4 times each click because `letGo("mouseup")` is called inside the loop → 4 laps = 4 stacked listeners on document. One click "rings all 4 bells"
+- **🔧**: Moved cursor line behind `if (!isDragging) return;`, no drag, no touch of the "note"
+- **💡**: A listener crash is silent on the page, loud in the console. Check the Console regularly
+

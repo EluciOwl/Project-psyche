@@ -186,6 +186,7 @@ function thoughtsRecreateOnDocEmotions() {
         cloudInZone.style.left = "";
         cloudInZone.classList.remove("active-cloud");
         cloudDropZone.style.visibility = "";
+        thoughtRelease.style.visibility = "";
         cloudInZone = null;
       })
     }
@@ -211,6 +212,8 @@ function thoughtsRecreateOnDocEmotions() {
           activeCloud = cloud;
           isDragging = true;
 
+          activeCloud.style.cursor = "grabbing";
+
           // No 🚫 "can't drop here-Symbol" is appearing!
           event.preventDefault();
 
@@ -228,6 +231,7 @@ function thoughtsRecreateOnDocEmotions() {
           }
         });
       }
+
       function motion(move) {
         // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
         document.addEventListener(move, (event) => {
@@ -248,8 +252,14 @@ function thoughtsRecreateOnDocEmotions() {
         const zoneRect = cloudDropZone.getBoundingClientRect();
         // when I'm not holding that one klick anymore, then release the cloud
         document.addEventListener(off, (event) => {
+
+          // it's like vaidating a valid ticket
           if (!isDragging) return;
           isDragging = false;
+          activeCloud.style.cursor = "grab";
+
+
+
           let mouseIsInZone =
             // is the mouse inside the box?
             event.clientX > zoneRect.left &&
@@ -259,13 +269,17 @@ function thoughtsRecreateOnDocEmotions() {
 
           if (mouseIsInZone) {
             if (cloudInZone) {
+              activeCloud.style.top = activeCloud.dataset.cloudTop;
+              activeCloud.style.right = activeCloud.dataset.cloudRight;
+              activeCloud.style.left = "";
               return;
             }
             thoughtRelease.style.visibility = "visible";
             cloudDropZone.style.visibility = "hidden";
+
             cloudInZone = activeCloud
             activeCloud.classList.add("active-cloud");
-            const activeCloudRect = activeCloud.getBoundingClientRect();
+
             // centering
             activeCloud.style.left = "50%";
             activeCloud.style.top = "50%";
