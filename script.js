@@ -14,6 +14,14 @@ let gapBetween = 20;
 
 let emotionsAmount = 10;
 const EMOTIONS = ["Happy", "Calm", "Proud", "Hopeful", "Loved", "Sad", "Angry", "Anxious", "Ashamed", "Lonely"]
+
+// Dragging Object variables
+let isDragging = false;
+let activeObject = null;
+let offsetX = 0;
+let offsetY = 0;
+let cloudInZone = null;
+
 // Naviagtions
 function IndexNavigation() {
   const homeButton = document.getElementById("home-button");
@@ -111,6 +119,91 @@ function counterAppearing(thoughtCounter, inputCounter) {
   }
 }
 
+
+// Dragging Objects
+function pressObject(on, rawObject) {
+  rawObject.addEventListener(on, (event) => {
+
+    activeObject = rawObject;
+    isDragging = true;
+
+    activeObject.style.cursor = "grabbing";
+
+    // No 🚫 "can't drop here-Symbol" is appearing!
+    event.preventDefault();
+
+    // hands back an object with measuremtns -> rectangle
+    const rect = rawObject.getBoundingClientRect();
+    if (event.touches) {
+      offsetX = event.touches[0].clientX - rect.left;
+      offsetY = event.touches[0].clientY - rect.top;
+
+    } else {
+      // rect.left -> distance from screen's left edge to cloud's left edge (px)
+      offsetX = event.clientX - rect.left;
+      // rect.top -> distance from screen's top edge to cloud's top edge (px)
+      offsetY = event.clientY - rect.top;
+    }
+  });
+}
+function moveObject(move) {
+  // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
+  document.addEventListener(move, (event) => {
+    if (!isDragging) return;
+    // that spot where I klicked
+    if (event.touches) {
+      activeObject.style.left = (event.touches[0].clientX - offsetX) + "px";
+      activeObject.style.top = (event.touches[0].clientY - offsetY) + "px";
+    } else {
+      activeObject.style.left = (event.clientX - offsetX) + "px";
+      activeObject.style.top = (event.clientY - offsetY) + "px";
+
+    }
+  })
+}
+function dropObject(off, dropZone, releaseButton, activeClass) {
+  // when I'm not holding that one klick anymore, then release the cloud
+  document.addEventListener(off, (event) => {
+
+    // it's like vaidating a valid ticket
+    if (!isDragging) return;
+    isDragging = false;
+    activeObject.style.cursor = "grab";
+
+    // measure fresh, inside the listener
+    const zoneRect = dropZone.getBoundingClientRect();
+
+    let mouseIsInZone =
+      // is the mouse inside the box?
+      event.clientX > zoneRect.left &&
+      event.clientX < zoneRect.right &&
+      event.clientY > zoneRect.top &&
+      event.clientY < zoneRect.bottom
+
+    if (mouseIsInZone) {
+      if (cloudInZone) {
+        activeObject.style.top = activeObject.dataset.cloudTop;
+        activeObject.style.right = activeObject.dataset.cloudRight;
+        activeObject.style.left = "";
+        return;
+      }
+      if (releaseButton) {
+        releaseButton.style.visibility = "visible";
+      }
+      dropZone.style.visibility = "hidden";
+
+      cloudInZone = activeObject
+      activeObject.classList.add(activeClass);
+
+      // centering
+      activeObject.style.left = "50%";
+      activeObject.style.top = "50%";
+      activeObject.style.transform = "translate(-50%, -50%)";
+    }
+  })
+}
+
+
 // Page feature
 function featureThoughts() {
   let sparkleEffectSwitch = true;
@@ -160,13 +253,10 @@ function thoughtsRecreateOnDocEmotions() {
     thoughtsArray = JSON.parse(thoughtsJson) || [];
 
     // that cloud i'm dragging right now
-    let activeCloud = null;
-    // dragging?
-    let isDragging = false;
 
     // set offset in X and Y to adjust mouse while dragging, keep mouse where I started to grap
-    let offsetX = 0;
-    let offsetY = 0;
+    let offsetCloudX = 0;
+    let offsetCloudY = 0;
 
     let vh = window.innerHeight * 0.01;
     let vw = window.innerWidth * 0.01;
@@ -174,8 +264,6 @@ function thoughtsRecreateOnDocEmotions() {
     // gap between the recreated Clouds
     let gapHeight = 0;
 
-    // when cloud in zone
-    let cloudInZone = null;
     const thoughtRelease = document.getElementById("thought-release");
     const cloudDropZone = document.getElementById("cloud-drop-zone");
 
@@ -205,94 +293,12 @@ function thoughtsRecreateOnDocEmotions() {
       gapHeight += gapBetween;
 
 
-      // When I klick, the returned clouds I built before getting chatched by Eventlistener
-      // When the event happens, I'm dragging
-      function press(on) {
-        cloud.addEventListener(on, (event) => {
-          activeCloud = cloud;
-          isDragging = true;
+      pressObject("mousedown", cloud);
 
-          activeCloud.style.cursor = "grabbing";
-
-          // No 🚫 "can't drop here-Symbol" is appearing!
-          event.preventDefault();
-
-          // hands back an object with measuremtns -> rectangle
-          const rect = cloud.getBoundingClientRect();
-          if (event.touches) {
-            offsetX = event.touches[0].clientX - rect.left;
-            offsetY = event.touches[0].clientY - rect.top;
-
-          } else {
-            // rect.left -> distance from screen's left edge to cloud's left edge (px)
-            offsetX = event.clientX - rect.left;
-            // rect.top -> distance from screen's top edge to cloud's top edge (px)
-            offsetY = event.clientY - rect.top;
-          }
-        });
-      }
-
-      function motion(move) {
-        // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
-        document.addEventListener(move, (event) => {
-          if (!isDragging) return;
-          // that spot where I klicked
-          if (event.touches) {
-            activeCloud.style.left = (event.touches[0].clientX - offsetX) + "px";
-            activeCloud.style.top = (event.touches[0].clientY - offsetY) + "px";
-          } else {
-            activeCloud.style.left = (event.clientX - offsetX) + "px";
-            activeCloud.style.top = (event.clientY - offsetY) + "px";
-
-          }
-        })
-      }
-
-      function letGo(off) {
-        const zoneRect = cloudDropZone.getBoundingClientRect();
-        // when I'm not holding that one klick anymore, then release the cloud
-        document.addEventListener(off, (event) => {
-
-          // it's like vaidating a valid ticket
-          if (!isDragging) return;
-          isDragging = false;
-          activeCloud.style.cursor = "grab";
-
-
-
-          let mouseIsInZone =
-            // is the mouse inside the box?
-            event.clientX > zoneRect.left &&
-            event.clientX < zoneRect.right &&
-            event.clientY > zoneRect.top &&
-            event.clientY < zoneRect.bottom
-
-          if (mouseIsInZone) {
-            if (cloudInZone) {
-              activeCloud.style.top = activeCloud.dataset.cloudTop;
-              activeCloud.style.right = activeCloud.dataset.cloudRight;
-              activeCloud.style.left = "";
-              return;
-            }
-            thoughtRelease.style.visibility = "visible";
-            cloudDropZone.style.visibility = "hidden";
-
-            cloudInZone = activeCloud
-            activeCloud.classList.add("active-cloud");
-
-            // centering
-            activeCloud.style.left = "50%";
-            activeCloud.style.top = "50%";
-            activeCloud.style.transform = "translate(-50%, -50%)";
-          }
-        })
-      }
-      // mouse
-      press("mousedown"); motion("mousemove"); letGo("mouseup");
-
-      // touch
-      press("touchstart"); motion("touchmove"); letGo("touchend");
     }
+    moveObject("mousemove");
+    
+    dropObject("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
   }
 }
 
@@ -321,8 +327,12 @@ function createFloatingClouds(input, container) {
   return divClouds;
 }
 
-function emotionsCreation() {
+function createEmotions() {
   const emotionsContainer = document.getElementById("emotions-container");
+
+  let offsetEmotionX = 0;
+  let offsetEmotionY = 0;
+
   if (emotionsContainer) {
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
       const emotionBox = document.createElement("div");
@@ -350,7 +360,7 @@ function init() {
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
 
-  emotionsCreation();
+  createEmotions();
 
   // Visual effects
   appearingInputText();

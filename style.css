@@ -320,14 +320,14 @@ body {
   flex-direction: column;
 }
 
-.screen-3-emotions  .thought-cloud {
+.screen-3-emotions .thought-cloud {
   position: absolute;
   cursor: grab;
   /* max-width: 400px = "never wider than 400, but smaller is allowed" → it can shrink. width: 400px = "always exactly 400" → it can't shrink or grow. */
   width: 20vw;
 }
 
-.screen-3-emotions  .thought-cloud:hover {
+.screen-3-emotions .thought-cloud:hover {
   filter:brightness(1.1);
 }
 
