@@ -252,3 +252,13 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔧**: Moved cursor line behind `if (!isDragging) return;`, no drag, no touch of the "note"
 - **💡**: A listener crash is silent on the page, loud in the console. Check the Console regularly
 
+## 2026-07-07
+### **`JS`** - Emotion boxes stretch when dragged left
+
+- **🐛**: dragging an emotion into the left 1/4 of the screen → box stretches wide
+
+![emotion stretch](/bugs/bug-images/emotion-strecht.png)
+
+- **🔍**: `positionObject` sets `right`, dragging sets `left` → box has BOTH anchors. no fixed width on `.emotion-Box` → browser stretches between left & right pin.
+- **🔧**: clear the anchor on grab → `activeObject.style.right = ""`
+- **💡**: only left 1/4? → that's where the invisible `right`-anchor line sits (clouds had the same bug, but their fixed width hid it silently)

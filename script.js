@@ -2,15 +2,32 @@
 const thoughtInput = document.getElementById("thought-input-box");
 // readyButton that appears after 4 entered thoughts
 const readyButton = document.getElementById("ready-button");
+
+const screenEmotions = document.querySelector(".screen-3-emotions");
+
 // collecting thoughts via input
 let thoughtsArray = [];
 
 const MAX_THOUGHTS = 4;
 
+// vh and vw
+let vh = window.innerHeight * 0.01;
+let vw = window.innerWidth * 0.01;
+
 // Position of the recreated Clouds on emotions.html
-let topSpacing = 20;
-let rightSpacing = 10;
-let gapBetween = 20;
+let topSpacingCloud = 20;
+let rightSpacingCloud = 10;
+let gapBetweenCloud = 20;
+// gap between the recreated Clouds
+
+// emotions start positions
+let topSpacingEmotion = -45;
+let rightSpacingEmotion = 180;
+let gapBetweenEmotion = 8.5;
+
+let gapHeight = 0;
+let positionTop = 0;
+let positionRight = 0;
 
 let emotionsAmount = 10;
 const EMOTIONS = ["Happy", "Calm", "Proud", "Hopeful", "Loved", "Sad", "Angry", "Anxious", "Ashamed", "Lonely"]
@@ -123,6 +140,7 @@ function counterAppearing(thoughtCounter, inputCounter) {
 // Dragging Objects
 function pressObject(on, rawObject) {
   rawObject.addEventListener(on, (event) => {
+    
 
     activeObject = rawObject;
     isDragging = true;
@@ -144,6 +162,10 @@ function pressObject(on, rawObject) {
       // rect.top -> distance from screen's top edge to cloud's top edge (px)
       offsetY = event.clientY - rect.top;
     }
+    
+    // Object stretches to the left when dragging to the left when that is not cleared haha
+    // reset css settings
+    activeObject.style.right = "";
   });
 }
 function moveObject(move) {
@@ -170,39 +192,69 @@ function dropObject(off, dropZone, releaseButton, activeClass) {
     isDragging = false;
     activeObject.style.cursor = "grab";
 
+    // guard because emotions without zone! --> fixing that later hihi
+    if (!dropZone) return;
+
     // measure fresh, inside the listener
     const zoneRect = dropZone.getBoundingClientRect();
 
-    let mouseIsInZone =
-      // is the mouse inside the box?
-      event.clientX > zoneRect.left &&
-      event.clientX < zoneRect.right &&
-      event.clientY > zoneRect.top &&
-      event.clientY < zoneRect.bottom
+    function invadeZone(indicatorIsInZone) {
+      if (indicatorIsInZone) {
+        if (cloudInZone) {
+          activeObject.style.top = activeObject.dataset.positionTop;
+          activeObject.style.right = activeObject.dataset.positionRight;
+          activeObject.style.left = "";
+          return;
+        }
+        if (releaseButton) {
+          releaseButton.style.visibility = "visible";
+        }
+        dropZone.style.visibility = "hidden";
 
-    if (mouseIsInZone) {
-      if (cloudInZone) {
-        activeObject.style.top = activeObject.dataset.cloudTop;
-        activeObject.style.right = activeObject.dataset.cloudRight;
-        activeObject.style.left = "";
-        return;
+        cloudInZone = activeObject
+        activeObject.classList.add(activeClass);
+
+        // centering
+        activeObject.style.left = "50%";
+        activeObject.style.top = "50%";
+        activeObject.style.transform = "translate(-50%, -50%)";
       }
-      if (releaseButton) {
-        releaseButton.style.visibility = "visible";
-      }
-      dropZone.style.visibility = "hidden";
+    }
 
-      cloudInZone = activeObject
-      activeObject.classList.add(activeClass);
+    if (event.touches) {
+      let fingerIsInZone =
+        // touches doesn't work, because finger is already lifted -> undef. Use changedTouches meowww
+        event.changedTouches[0].clientX > zoneRect.left &&
+        event.changedTouches[0].clientX < zoneRect.right &&
+        event.changedTouches[0].clientY > zoneRect.top &&
+        event.changedTouches[0].clientY < zoneRect.bottom
 
-      // centering
-      activeObject.style.left = "50%";
-      activeObject.style.top = "50%";
-      activeObject.style.transform = "translate(-50%, -50%)";
+      invadeZone(fingerIsInZone);
+    } else {
+      let mouseIsInZone =
+        // is the mouse inside the box?
+        // Start top-left corner (0,0) -> Screens draw pixels starting from top-left!!!
+        event.clientX > zoneRect.left &&
+        event.clientX < zoneRect.right &&
+        event.clientY > zoneRect.top &&
+        event.clientY < zoneRect.bottom
+
+      invadeZone(mouseIsInZone);
     }
   })
 }
 
+// position Objects
+function positionObject(rawObject, topSpacing, rightSpacing, gapBetween) {
+  // Start position of recreated Clouds at the right of the screen
+  rawObject.dataset.positionTop = topSpacing + gapHeight + "vh";
+  rawObject.style.top = rawObject.dataset.positionTop;
+
+  rawObject.dataset.positionRight = rightSpacing + "vh";
+  rawObject.style.right = rawObject.dataset.positionRight;
+
+  gapHeight += gapBetween;
+}
 
 // Page feature
 function featureThoughts() {
@@ -245,32 +297,18 @@ function featureThoughts() {
   }
 }
 function thoughtsRecreateOnDocEmotions() {
-  const screenEmotions = document.querySelector(".screen-3-emotions");
-
   if (screenEmotions) {
     let thoughtsJson = localStorage.getItem("thoughts");
     // || [] protects .length from crashing if parse gave nothing!
     thoughtsArray = JSON.parse(thoughtsJson) || [];
-
-    // that cloud i'm dragging right now
-
-    // set offset in X and Y to adjust mouse while dragging, keep mouse where I started to grap
-    let offsetCloudX = 0;
-    let offsetCloudY = 0;
-
-    let vh = window.innerHeight * 0.01;
-    let vw = window.innerWidth * 0.01;
-
-    // gap between the recreated Clouds
-    let gapHeight = 0;
 
     const thoughtRelease = document.getElementById("thought-release");
     const cloudDropZone = document.getElementById("cloud-drop-zone");
 
     if (thoughtRelease) {
       thoughtRelease.addEventListener("click", () => {
-        cloudInZone.style.top = cloudInZone.dataset.cloudTop;
-        cloudInZone.style.right = cloudInZone.dataset.cloudRight;
+        cloudInZone.style.top = cloudInZone.dataset.positionTop;
+        cloudInZone.style.right = cloudInZone.dataset.positionRight;
         cloudInZone.style.left = "";
         cloudInZone.classList.remove("active-cloud");
         cloudDropZone.style.visibility = "";
@@ -283,22 +321,17 @@ function thoughtsRecreateOnDocEmotions() {
       // Store created cloud
       const cloud = createFloatingClouds(thoughtsArray[thoughtsNumber], screenEmotions);
 
-      // Start position of recreated Clouds at the right of the screen
-      cloud.dataset.cloudTop = topSpacing + gapHeight + "vh";
-      cloud.style.top = cloud.dataset.cloudTop;
-
-      cloud.dataset.cloudRight = rightSpacing + "vh";
-      cloud.style.right = cloud.dataset.cloudRight;
-
-      gapHeight += gapBetween;
-
+      positionObject(cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
 
       pressObject("mousedown", cloud);
+      pressObject("touchstart", cloud);
 
     }
     moveObject("mousemove");
-    
+    moveObject("touchmove");
+
     dropObject("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
+    dropObject("touchend", cloudDropZone, thoughtRelease, "active-cloud");
   }
 }
 
@@ -328,24 +361,40 @@ function createFloatingClouds(input, container) {
 }
 
 function createEmotions() {
-  const emotionsContainer = document.getElementById("emotions-container");
-
   let offsetEmotionX = 0;
   let offsetEmotionY = 0;
 
-  if (emotionsContainer) {
+  if (screenEmotions) {
+    let lineBreak = 0;
+    
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
+
       const emotionBox = document.createElement("div");
       emotionBox.classList.add("emotion-Box");
 
       const emotionText = document.createElement("span")
       emotionText.classList.add("emotion-text");
-
       emotionText.textContent = EMOTIONS[emotionCounter];
 
       emotionBox.appendChild(emotionText);
-      emotionsContainer.appendChild(emotionBox);
+      screenEmotions.appendChild(emotionBox);
+
+      lineBreak = lineBreak + 1;
+
+      if (lineBreak === 6) {
+        rightSpacingEmotion = 160;
+        topSpacingEmotion = -87.5;
+      }
+      positionObject(emotionBox, topSpacingEmotion, rightSpacingEmotion, gapBetweenEmotion)
+
+      pressObject("mousedown", emotionBox);
+      pressObject("touchstart", emotionBox);
     }
+    moveObject("mousemove");
+    moveObject("touchmove");
+
+    dropObject("mouseup");
+    dropObject("touchend");
   }
 }
 
