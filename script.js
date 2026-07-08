@@ -152,6 +152,7 @@ function pressObject(on, rawObject) {
 
     // hands back an object with measuremtns -> rectangle
     const rect = rawObject.getBoundingClientRect();
+    
     if (event.touches) {
       offsetX = event.touches[0].clientX - rect.left;
       offsetY = event.touches[0].clientY - rect.top;
@@ -162,13 +163,10 @@ function pressObject(on, rawObject) {
       // rect.top -> distance from screen's top edge to cloud's top edge (px)
       offsetY = event.clientY - rect.top;
     }
-    
-    // Object stretches to the left when dragging to the left when that is not cleared haha
-    // reset css settings
-    activeObject.style.right = "";
   });
 }
 function moveObject(move) {
+  
   // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
   document.addEventListener(move, (event) => {
     if (!isDragging) return;
@@ -181,24 +179,27 @@ function moveObject(move) {
       activeObject.style.top = (event.clientY - offsetY) + "px";
 
     }
+    // Object stretches to the left when dragging to the left when that is not cleared haha
+    // reset css settings AND Browser doesn't paint mid-function all at once when even expect of getBoundingClientRect
+    activeObject.style.right = "";
   })
 }
-function dropObject(off, dropZone, releaseButton, activeClass) {
+function dropObjectCloud(off, dropZone, releaseButton, activeClass) {
   // when I'm not holding that one klick anymore, then release the cloud
   document.addEventListener(off, (event) => {
 
     // it's like vaidating a valid ticket
     if (!isDragging) return;
+
+    // When no Cloud -> return
+    if (!activeObject.classList.contains("thought-cloud")) return;
     isDragging = false;
     activeObject.style.cursor = "grab";
 
     // guard because emotions without zone! --> fixing that later hihi
     if (!dropZone) return;
 
-    // measure fresh, inside the listener
-    const zoneRect = dropZone.getBoundingClientRect();
-
-    function invadeZone(indicatorIsInZone) {
+    function invadeZoneCloud(indicatorIsInZone) {
       if (indicatorIsInZone) {
         if (cloudInZone) {
           activeObject.style.top = activeObject.dataset.positionTop;
@@ -221,6 +222,7 @@ function dropObject(off, dropZone, releaseButton, activeClass) {
       }
     }
 
+    const zoneRect = dropZone.getBoundingClientRect();
     if (event.touches) {
       let fingerIsInZone =
         // touches doesn't work, because finger is already lifted -> undef. Use changedTouches meowww
@@ -229,7 +231,7 @@ function dropObject(off, dropZone, releaseButton, activeClass) {
         event.changedTouches[0].clientY > zoneRect.top &&
         event.changedTouches[0].clientY < zoneRect.bottom
 
-      invadeZone(fingerIsInZone);
+      invadeZoneCloud(fingerIsInZone);
     } else {
       let mouseIsInZone =
         // is the mouse inside the box?
@@ -239,9 +241,12 @@ function dropObject(off, dropZone, releaseButton, activeClass) {
         event.clientY > zoneRect.top &&
         event.clientY < zoneRect.bottom
 
-      invadeZone(mouseIsInZone);
+      invadeZoneCloud(mouseIsInZone);
     }
   })
+}
+function dropObjectEmotion() {
+  
 }
 
 // position Objects
@@ -330,8 +335,8 @@ function thoughtsRecreateOnDocEmotions() {
     moveObject("mousemove");
     moveObject("touchmove");
 
-    dropObject("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
-    dropObject("touchend", cloudDropZone, thoughtRelease, "active-cloud");
+    dropObjectCloud("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
+    dropObjectCloud("touchend", cloudDropZone, thoughtRelease, "active-cloud");
   }
 }
 
@@ -392,9 +397,6 @@ function createEmotions() {
     }
     moveObject("mousemove");
     moveObject("touchmove");
-
-    dropObject("mouseup");
-    dropObject("touchend");
   }
 }
 
