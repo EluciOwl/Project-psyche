@@ -140,7 +140,7 @@ function counterAppearing(thoughtCounter, inputCounter) {
 // Dragging Objects
 function pressObject(on, rawObject) {
   rawObject.addEventListener(on, (event) => {
-    
+
 
     activeObject = rawObject;
     isDragging = true;
@@ -152,7 +152,7 @@ function pressObject(on, rawObject) {
 
     // hands back an object with measuremtns -> rectangle
     const rect = rawObject.getBoundingClientRect();
-    
+
     if (event.touches) {
       offsetX = event.touches[0].clientX - rect.left;
       offsetY = event.touches[0].clientY - rect.top;
@@ -166,7 +166,7 @@ function pressObject(on, rawObject) {
   });
 }
 function moveObject(move) {
-  
+
   // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
   document.addEventListener(move, (event) => {
     if (!isDragging) return;
@@ -184,15 +184,14 @@ function moveObject(move) {
     activeObject.style.right = "";
   })
 }
-function dropObjectCloud(off, dropZone, releaseButton, activeClass) {
+function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
   // when I'm not holding that one klick anymore, then release the cloud
-  document.addEventListener(off, (event) => {
+  document.addEventListener(offCloud, (event) => {
 
     // it's like vaidating a valid ticket
-    if (!isDragging) return;
-
     // When no Cloud -> return
-    if (!activeObject.classList.contains("thought-cloud")) return;
+    if (!isDragging || !activeObject.classList.contains("thought-cloud")) return;
+
     isDragging = false;
     activeObject.style.cursor = "grab";
 
@@ -245,8 +244,49 @@ function dropObjectCloud(off, dropZone, releaseButton, activeClass) {
     }
   })
 }
-function dropObjectEmotion() {
-  
+function dropObjectEmotion(offEmotion) {
+  document.addEventListener(offEmotion, (event) => {
+
+    if (!isDragging || !activeObject.classList.contains("emotion-box")) return;
+    isDragging = false;
+
+    activeObject.style.cursor = "grab"
+
+    if (cloudInZone) {
+      const zoneRect = document.getElementById("cloud-drop-zone").getBoundingClientRect();
+
+      function consumeEmotion() {
+        const eatEmotion = activeObject;
+
+        eatEmotion.classList.remove("pulse")
+
+        eatEmotion.style.animation = "consumed 1s ease forwards";
+        eatEmotion.classList.add("consumed")
+
+        eatEmotion.addEventListener("animationend", () => {
+          eatEmotion.style.visibility = "hidden";
+        })
+      }
+
+      if (event.touches) {
+        let fingerIsInZone =
+          event.changedTouches[0].clientX > zoneRect.left &&
+          event.changedTouches[0].clientX < zoneRect.right &&
+          event.changedTouches[0].clientY > zoneRect.top &&
+          event.changedTouches[0].clientY < zoneRect.bottom
+
+        if (fingerIsInZone) consumeEmotion();
+      } else {
+        let mouseIsInZone =
+          event.clientX > zoneRect.left &&
+          event.clientX < zoneRect.right &&
+          event.clientY > zoneRect.top &&
+          event.clientY < zoneRect.bottom
+
+        if (mouseIsInZone) consumeEmotion();
+      }
+    }
+  })
 }
 
 // position Objects
@@ -371,11 +411,11 @@ function createEmotions() {
 
   if (screenEmotions) {
     let lineBreak = 0;
-    
+
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
 
       const emotionBox = document.createElement("div");
-      emotionBox.classList.add("emotion-Box");
+      emotionBox.classList.add("emotion-box");
 
       const emotionText = document.createElement("span")
       emotionText.classList.add("emotion-text");
@@ -391,12 +431,14 @@ function createEmotions() {
         topSpacingEmotion = -87.5;
       }
       positionObject(emotionBox, topSpacingEmotion, rightSpacingEmotion, gapBetweenEmotion)
-
       pressObject("mousedown", emotionBox);
       pressObject("touchstart", emotionBox);
     }
     moveObject("mousemove");
     moveObject("touchmove");
+
+    dropObjectEmotion("mouseup");
+    dropObjectEmotion("touchend");
   }
 }
 

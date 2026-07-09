@@ -262,3 +262,12 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔍**: `positionObject` sets `right`, dragging sets `left` → box has BOTH anchors. no fixed width on `.emotion-Box` → browser stretches between left & right pin.
 - **🔧**: clear the anchor on grab → `activeObject.style.right = ""`
 - **💡**: only left 1/4? → that's where the invisible `right`-anchor line sits (clouds had the same bug, but their fixed width hid it silently)
+
+## 2026-07-09
+### **`CSS`** - White line, right screen edge
+
+- **🐛**: On all `.html` appeared a white line on the right edge
+- **🔍**: `margin: 0` on body got lost in the CSS refactor → browser default 8px returned (user agent stylesheet), DevTools: Computed tab showed the 8px.
+- **🔧**: set `margin: 0` in `body`
+- **💡**: Trust DevTools, not your eyes (reveal hidden problems)
+- **👀**: removed the fix to verify → symptom did NOT come back, but Computed still showed 8px

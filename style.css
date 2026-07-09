@@ -7,6 +7,8 @@ html, body {
 }
 
 body {
+  margin: 0;
+
   opacity: 0;
   animation: fadeIn 2s ease forwards;
 
@@ -403,7 +405,7 @@ body {
 
 
 
-.emotion-Box {
+.emotion-box {
   position: absolute;
   display: flex;
   align-items: center;
@@ -423,7 +425,7 @@ body {
     linear-gradient(45deg, rgba(0, 183, 255, 0.5), hwb(214 1% 0% / 0.5), rgba(0, 255, 200, 0.8)) border-box;
 }
 
-.emotion-Box:hover {
+.emotion-box:hover {
   filter: brightness(1.2);
 }
 
@@ -435,5 +437,10 @@ body {
 
 .emotion-text {
   font-size: 1.5vw;
+}
+
+@keyframes consumed {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
