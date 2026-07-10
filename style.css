@@ -418,8 +418,6 @@ body {
   height: 5vh;
   border-radius: 10%;
 
-  animation: pulse 5s ease-in-out infinite;
-
     background:
     linear-gradient(rgba(0, 183, 255, 0.5), rgba(0, 183, 255, 0.25)) padding-box,
     linear-gradient(45deg, rgba(0, 183, 255, 0.5), hwb(214 1% 0% / 0.5), rgba(0, 255, 200, 0.8)) border-box;
@@ -429,10 +427,14 @@ body {
   filter: brightness(1.2);
 }
 
+.pulse {
+  animation: pulse 5s ease-in-out infinite;
+}
+
 @keyframes pulse {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.2); }
-  100% { transform: scale((1)); }  
+  100% { transform: scale(1); }  
 }
 
 .emotion-text {
@@ -444,3 +446,6 @@ body {
   to   { opacity: 0; }
 }
 
+.consumed {
+  animation: consumed 1s ease forwards;
+}

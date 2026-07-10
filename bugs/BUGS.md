@@ -271,3 +271,15 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔧**: set `margin: 0` in `body`
 - **💡**: Trust DevTools, not your eyes (reveal hidden problems)
 - **👀**: removed the fix to verify → symptom did NOT come back, but Computed still showed 8px
+
+## 2026-07-10
+### **`JS/CSS`** - Reset emotion boxes pulse out of sync
+
+- **🐛**: After snapping cloud #2, reset emotion boxes pulsed off-beat from each other
+
+![pulse off beat](/bugs/bug-gifs/pulse.off.beat.gif)
+
+- **🔍**: Fix attempt `remove("pulse")` + `add("pulse")` back-to-back did nothing → browser batches style changes, sees "-1 + 1 = 0" never restarts
+- **🔧**: `remove("pulse")` → `getBoundingClientRect()` → `add("pulse")`
+- **💡**: Forced reflow. Remove → reflow → add
+- **👀**: First problem, don't forget: animation lived on .emotion-box, no .pulse class existed → JS toggled a class CSS never matched before

@@ -39,6 +39,7 @@ let offsetX = 0;
 let offsetY = 0;
 let cloudInZone = null;
 
+const consumedEmotionArray = [];
 // Naviagtions
 function IndexNavigation() {
   const homeButton = document.getElementById("home-button");
@@ -218,6 +219,26 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         activeObject.style.left = "50%";
         activeObject.style.top = "50%";
         activeObject.style.transform = "translate(-50%, -50%)";
+
+        const emotionBoxes = document.querySelectorAll(".emotion-box");
+
+        if (emotionBoxes.length > 0) {
+          for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
+            emotionBoxes[emotionNumber].style.visibility = "visible"
+            emotionBoxes[emotionNumber].style.animation = "";
+            emotionBoxes[emotionNumber].classList.remove("consumed");
+
+            emotionBoxes[emotionNumber].classList.remove("pulse");
+
+            emotionBoxes[emotionNumber].classList.add("pulse");
+
+            emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
+            emotionBoxes[emotionNumber].style.right = emotionBoxes[emotionNumber].dataset.positionRight;
+            emotionBoxes[emotionNumber].style.left = "";
+          }
+        } else {
+          createEmotions();
+        }
       }
     }
 
@@ -255,19 +276,6 @@ function dropObjectEmotion(offEmotion) {
     if (cloudInZone) {
       const zoneRect = document.getElementById("cloud-drop-zone").getBoundingClientRect();
 
-      function consumeEmotion() {
-        const eatEmotion = activeObject;
-
-        eatEmotion.classList.remove("pulse")
-
-        eatEmotion.style.animation = "consumed 1s ease forwards";
-        eatEmotion.classList.add("consumed")
-
-        eatEmotion.addEventListener("animationend", () => {
-          eatEmotion.style.visibility = "hidden";
-        })
-      }
-
       if (event.touches) {
         let fingerIsInZone =
           event.changedTouches[0].clientX > zoneRect.left &&
@@ -288,6 +296,8 @@ function dropObjectEmotion(offEmotion) {
     }
   })
 }
+
+
 
 // position Objects
 function positionObject(rawObject, topSpacing, rightSpacing, gapBetween) {
@@ -424,6 +434,8 @@ function createEmotions() {
       emotionBox.appendChild(emotionText);
       screenEmotions.appendChild(emotionBox);
 
+      emotionBox.classList.add("pulse");
+
       lineBreak = lineBreak + 1;
 
       if (lineBreak === 6) {
@@ -441,7 +453,21 @@ function createEmotions() {
     dropObjectEmotion("touchend");
   }
 }
+function consumeEmotion() {
+  const eatEmotion = activeObject;
 
+  eatEmotion.classList.remove("pulse")
+
+  eatEmotion.classList.add("consumed")
+
+  const emotionTextCollect = eatEmotion.textContent
+
+  eatEmotion.addEventListener("animationend", () => {
+    eatEmotion.style.visibility = "hidden";
+    consumedEmotionArray.push(emotionTextCollect);
+    console.log(consumedEmotionArray);
+  })
+}
 
 //order matters inside a function, not between functions.
 function init() {
@@ -452,8 +478,6 @@ function init() {
   // Page feature
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
-
-  createEmotions();
 
   // Visual effects
   appearingInputText();
