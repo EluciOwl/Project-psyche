@@ -229,7 +229,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
             emotionBoxes[emotionNumber].classList.remove("consumed");
 
             emotionBoxes[emotionNumber].classList.remove("pulse");
-
+            emotionBoxes[emotionNumber].getBoundingClientRect();
             emotionBoxes[emotionNumber].classList.add("pulse");
 
             emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
