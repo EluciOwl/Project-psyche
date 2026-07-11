@@ -283,3 +283,14 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔧**: `remove("pulse")` → `getBoundingClientRect()` → `add("pulse")`
 - **💡**: Forced reflow. Remove → reflow → add
 - **👀**: First problem, don't forget: animation lived on .emotion-box, no .pulse class existed → JS toggled a class CSS never matched before
+
+## 2026-07-11
+### **`JS`** -  Clouds display `[object Object]` instead of thought text
+
+- **🐛**: After refactoring thoughtsArray from strings to objects, every cloud on emotions.html showed the text `[object Object]`
+
+![object Object](/bugs/bug-images/object-Object.png)
+
+- **🔍**: The rebuild loop passed `thoughtsArray[thoughtCounter]` (the whole object) into `createFloatingClouds`, which assigns it to `textContent`. `textContent` needs a string, given an object, JS auto-converts it, and an object's default string form is `"[object Object]"`. No error thrown: silent conversion, wrong display
+- **🔧**: Pass the "compartment", not the "box": `thoughtsArray[thoughtCounter].thought`
+- **💡**: Write side and read side are two separate places. Changing the stored shape means every reader of that data must be updated too, storage looked perfect while the screen was broken

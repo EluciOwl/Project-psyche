@@ -10,6 +10,7 @@ let thoughtsArray = [];
 
 const MAX_THOUGHTS = 4;
 
+
 // vh and vw
 let vh = window.innerHeight * 0.01;
 let vw = window.innerWidth * 0.01;
@@ -18,8 +19,8 @@ let vw = window.innerWidth * 0.01;
 let topSpacingCloud = 20;
 let rightSpacingCloud = 10;
 let gapBetweenCloud = 20;
-// gap between the recreated Clouds
 
+// gap between the recreated Clouds
 // emotions start positions
 let topSpacingEmotion = -45;
 let rightSpacingEmotion = 180;
@@ -216,6 +217,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         activeObject.classList.add(activeClass);
 
         // centering
+        activeObject.classList.remove("floatCloud")
         activeObject.style.left = "50%";
         activeObject.style.top = "50%";
         activeObject.style.transform = "translate(-50%, -50%)";
@@ -325,6 +327,11 @@ function featureThoughts() {
 
     thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
 
+    const thoughtsEmotioned = {
+      thought: "",
+      emotions: []
+    };
+
     // listen for "keydown"
     thoughtInput.addEventListener("keydown", (event) => {
 
@@ -335,9 +342,11 @@ function featureThoughts() {
         counterAppearing(thoughtCounter, inputCounter);
         createFloatingClouds(thoughtInput.value, thoughtsContainer);
 
-        thoughtsArray.push(thoughtInput.value);
+        thoughtsArray.push({ thought: thoughtInput.value, emotions: [] });
         // my array  ->  JSON.stringify  ->  a JSON string  ->  localStorage holds it
-        localStorage.setItem("thoughts", JSON.stringify(thoughtsArray));
+
+
+        localStorage.setItem("thoughtsData", JSON.stringify(thoughtsArray));
         // clearing the text-field
         thoughtInput.value = "";
       }
@@ -353,7 +362,7 @@ function featureThoughts() {
 }
 function thoughtsRecreateOnDocEmotions() {
   if (screenEmotions) {
-    let thoughtsJson = localStorage.getItem("thoughts");
+    let thoughtsJson = localStorage.getItem("thoughtsData");
     // || [] protects .length from crashing if parse gave nothing!
     thoughtsArray = JSON.parse(thoughtsJson) || [];
 
@@ -366,21 +375,23 @@ function thoughtsRecreateOnDocEmotions() {
         cloudInZone.style.right = cloudInZone.dataset.positionRight;
         cloudInZone.style.left = "";
         cloudInZone.classList.remove("active-cloud");
+        cloudInZone.classList.add("floatCloud");
         cloudDropZone.style.visibility = "";
         thoughtRelease.style.visibility = "";
         cloudInZone = null;
       })
     }
 
-    for (let thoughtsNumber = 0; thoughtsNumber < thoughtsArray.length; thoughtsNumber++) {
+    for (let thoughtCounter = 0; thoughtCounter < thoughtsArray.length; thoughtCounter++) {
       // Store created cloud
-      const cloud = createFloatingClouds(thoughtsArray[thoughtsNumber], screenEmotions);
+      const cloud = createFloatingClouds(thoughtsArray[thoughtCounter].thought, screenEmotions);
+      cloud.dataset.thoughtNumber = thoughtCounter
+
 
       positionObject(cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
 
       pressObject("mousedown", cloud);
       pressObject("touchstart", cloud);
-
     }
     moveObject("mousemove");
     moveObject("touchmove");
@@ -411,6 +422,8 @@ function createFloatingClouds(input, container) {
   divClouds.appendChild(imgCloud);
   divClouds.appendChild(thoughtTextCloud);
   container.appendChild(divClouds);
+
+  divClouds.classList.add("floatCloud");
   // give that value for the drag and drop catch later!
   return divClouds;
 }
@@ -456,17 +469,28 @@ function createEmotions() {
 function consumeEmotion() {
   const eatEmotion = activeObject;
 
+  const emotionTextCollect = eatEmotion.textContent
+
   eatEmotion.classList.remove("pulse")
 
   eatEmotion.classList.add("consumed")
 
-  const emotionTextCollect = eatEmotion.textContent
+  if (cloudInZone) {
+    cloudInZone.classList.add("shiny");
+  }
 
   eatEmotion.addEventListener("animationend", () => {
     eatEmotion.style.visibility = "hidden";
     consumedEmotionArray.push(emotionTextCollect);
     console.log(consumedEmotionArray);
-  })
+
+    cloudInZone.classList.remove("shiny");
+
+
+    thoughtsArray[cloudInZone.dataset.thoughtNumber].emotions.push(emotionTextCollect);
+    localStorage.setItem("thoughtsData", JSON.stringify(thoughtsArray));
+
+  }, { once: true });
 }
 
 //order matters inside a function, not between functions.

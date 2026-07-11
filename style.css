@@ -273,13 +273,16 @@ body {
   position: relative;
   display: inline-block;
   width: 20vw;
-  animation: floatCloud 4s ease-in-out infinite;
 }
 
 @keyframes floatCloud {
   0%   { transform: translateY(0px); }
   50%  { transform: translateY(15px); }
   100% { transform: translateY(0px); }
+}
+
+.floatCloud {
+  animation: floatCloud 4s ease-in-out infinite;
 }
 
 .thought-cloud img {
@@ -336,7 +339,6 @@ body {
 .screen-3-emotions .thought-cloud.active-cloud {
   width: 30vw;
   margin: 0;
-  animation: none;
   pointer-events: none;
 }
 
@@ -448,4 +450,14 @@ body {
 
 .consumed {
   animation: consumed 1s ease forwards;
+}
+
+.shiny {
+  animation: shiny 0.5s ease-out; 
+}
+
+@keyframes shiny {
+  0%   { filter: brightness(1);  }
+  50%  { filter: brightness(1.2);}
+  100% { filter: brightness(1);  }
 }
