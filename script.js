@@ -1,48 +1,34 @@
-// Thoughts from input field
-const thoughtInput = document.getElementById("thought-input-box");
-// readyButton that appears after 4 entered thoughts
-const readyButton = document.getElementById("ready-button");
-
+// ----------------------------------- GLOBALS ----------------------------------- //
 const screenEmotions = document.querySelector(".screen-3-emotions");
 
-// collecting thoughts via input
-let thoughtsArray = [];
+
+let thoughtsAndEmotions = [];
+const consumedEmotionArray = [];
+
+const thoughtInput = document.getElementById("thought-input-box");
 
 const MAX_THOUGHTS = 4;
 
+const readyButton = document.getElementById("ready-button");
 
-// vh and vw
-let vh = window.innerHeight * 0.01;
-let vw = window.innerWidth * 0.01;
 
-// Position of the recreated Clouds on emotions.html
-let topSpacingCloud = 20;
-let rightSpacingCloud = 10;
-let gapBetweenCloud = 20;
-
-// gap between the recreated Clouds
-// emotions start positions
-let topSpacingEmotion = -45;
-let rightSpacingEmotion = 180;
-let gapBetweenEmotion = 8.5;
-
-let gapHeight = 0;
-let positionTop = 0;
-let positionRight = 0;
-
-let emotionsAmount = 10;
+// Amount of useable emotions
 const EMOTIONS = ["Happy", "Calm", "Proud", "Hopeful", "Loved", "Sad", "Angry", "Anxious", "Ashamed", "Lonely"]
 
-// Dragging Object variables
-let isDragging = false;
-let activeObject = null;
+// position on specific box
 let offsetX = 0;
 let offsetY = 0;
-let cloudInZone = null;
 
-const consumedEmotionArray = [];
-// Naviagtions
+// Default state
+let activeObject = null;
+let cloudInZone = null;
+let isDragging = false;
+
+
+// ----------------------------------- FUNCTIONS ----------------------------------- //
+// ===== Naviagtions ===== //
 function IndexNavigation() {
+  // Home button -> index.html
   const homeButton = document.getElementById("home-button");
   if (homeButton) {
     homeButton.addEventListener("click", () => {
@@ -50,23 +36,24 @@ function IndexNavigation() {
     });
   }
 
+  // Home button -> thoughts.html + emotions.html 
+  const homeColoredButton = document.querySelector(".home-colored-button");
+  if (homeColoredButton) {
+    homeColoredButton.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  }
+
+  // Thoughts button on start screen
   const thoughtsButton = document.getElementById("thoughts-button");
   if (thoughtsButton) {
     thoughtsButton.addEventListener("click", () => {
       window.location.href = "thoughts.html";
     });
   }
-
-  // thoughts.html buttons
-  const homeThoughtButton = document.querySelector(".home-colored-button");
-  if (homeThoughtButton) {
-    homeThoughtButton.addEventListener("click", () => {
-      window.location.href = "index.html";
-    });
-  }
 }
 function readyToEmotionsNavigation() {
-  // move from readyButton -> emotions.html
+  // readyButton -> emotions.html
   if (readyButton) {
     readyButton.addEventListener("click", () => {
       window.location.href = "emotions.html";
@@ -74,7 +61,330 @@ function readyToEmotionsNavigation() {
   }
 }
 
-// Visual effects
+// ===== Page feature ===== //
+function featureThoughts() {
+  let sparkleEffectSwitch = true;
+  // container to collect all thought-inputs
+  const thoughtsContainer = document.getElementById("thoughts-container");
+  // display counter for entered thoughts
+  const thoughtCounter = document.getElementById("thought-counter");
+
+  // guard thoughtInput
+  if (thoughtInput) {
+    let inputCounter = 0;
+    thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
+
+    // Press Enter -> thought counter + 1, create cloud
+    thoughtInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && inputCounter < MAX_THOUGHTS) {
+        inputCounter++;
+
+        counterAppearing(thoughtCounter, inputCounter);
+        createFloatingClouds(thoughtInput.value, thoughtsContainer);
+
+        // 
+        thoughtsAndEmotions.push({ thought: thoughtInput.value, emotions: [] });
+
+        // my array  ->  JSON.stringify  ->  a JSON string  ->  localStorage holds it
+        localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
+        // clearing the text-field
+        thoughtInput.value = "";
+      }
+      if (inputCounter === MAX_THOUGHTS && sparkleEffectSwitch) {
+        // creats sparkle effect for readyButton
+        const sparkleVisual = document.getElementById("sparkle-effect");
+        readyButton.style.visibility = "visible";
+        sparkleEffect(sparkleVisual);
+        sparkleEffectSwitch = false;
+      }
+    });
+  }
+}
+function thoughtsRecreateOnDocEmotions() {
+  // Start position -> clouds
+  const topSpacingCloud = 20;
+  const rightSpacingCloud = 10;
+  const gapBetweenCloud = 20;
+
+  if (screenEmotions) {
+    let thoughtsJson = localStorage.getItem("thoughtsData");
+    // || [] protects .length from crashing if parse gave nothing!
+    thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
+
+    const thoughtRelease = document.getElementById("thought-release");
+    const cloudDropZone = document.getElementById("cloud-drop-zone");
+
+    if (thoughtRelease) {
+
+      thoughtRelease.addEventListener("click", () => {
+        cloudInZone.style.top = cloudInZone.dataset.positionTop;
+        cloudInZone.style.right = cloudInZone.dataset.positionRight;
+        cloudInZone.style.left = "";
+        cloudInZone.classList.remove("active-cloud");
+        cloudInZone.classList.remove("shiny")
+        cloudInZone.style.transform = "";
+        cloudInZone.classList.add("floatCloud");
+        cloudDropZone.style.visibility = "";
+        thoughtRelease.style.visibility = "";
+        cloudInZone = null;
+      })
+    }
+
+    for (let thoughtCounter = 0; thoughtCounter < thoughtsAndEmotions.length; thoughtCounter++) {
+      // Store created cloud
+      const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, screenEmotions);
+      cloud.dataset.thoughtNumber = thoughtCounter
+
+
+      positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
+
+      pressObject("mousedown", cloud);
+      pressObject("touchstart", cloud);
+    }
+    moveObject("mousemove");
+    moveObject("touchmove");
+
+    dropObjectCloud("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
+    dropObjectCloud("touchend", cloudDropZone, thoughtRelease, "active-cloud");
+  }
+}
+
+// ===== Creation ===== //
+function createFloatingClouds(input, container) {
+  // Container for all Clouds
+  const divClouds = document.createElement("div");
+  divClouds.classList.add("thought-cloud");
+
+  // Cloud image create
+  const imgCloud = document.createElement("img");
+  imgCloud.src = "assets/images/ai-generated/thought.png";
+
+  // Text create
+  const thoughtTextCloud = document.createElement("span");
+  thoughtTextCloud.classList.add("thought-text-cloud");
+  // .value is the String I gave -> .textContent is showing the text
+  thoughtTextCloud.textContent = input;
+
+  // put created img, text into Container
+  divClouds.appendChild(imgCloud);
+  divClouds.appendChild(thoughtTextCloud);
+  container.appendChild(divClouds);
+
+  divClouds.classList.add("floatCloud");
+  // give that value for the drag and drop catch later!
+  return divClouds;
+}
+function createEmotions() {
+
+  // Start position -> emotions
+  let rightSpacingEmotion = 180;
+  const topSpacingEmotion = 30;
+  const gapBetweenEmotion = 8.5;
+
+  if (screenEmotions) {
+    let positionInRow;
+    const emotionsAmount = EMOTIONS.length;
+
+    for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
+
+      const emotionBox = document.createElement("div");
+      emotionBox.classList.add("emotion-box");
+
+      const emotionText = document.createElement("span")
+      emotionText.classList.add("emotion-text");
+      emotionText.textContent = EMOTIONS[emotionCounter];
+
+      emotionBox.appendChild(emotionText);
+      screenEmotions.appendChild(emotionBox);
+
+      emotionBox.classList.add("pulse");
+
+      if (emotionCounter < emotionsAmount/2) {
+        positionInRow = emotionCounter;
+      } else {
+        rightSpacingEmotion = 160;
+        positionInRow = emotionCounter - (emotionsAmount / 2);
+      }
+
+      positionObject(positionInRow, emotionBox, topSpacingEmotion, rightSpacingEmotion, gapBetweenEmotion)
+
+      pressObject("mousedown", emotionBox);
+      pressObject("touchstart", emotionBox);
+    }
+    moveObject("mousemove");
+    moveObject("touchmove");
+
+    dropObjectEmotion("mouseup");
+    dropObjectEmotion("touchend");
+  }
+}
+
+// ===== Position Objects ===== //
+function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapBetween) {
+
+  const gapHeight = gapBetween * counterObject;
+
+  // dataset = home position, drag-and-drop reset snaps back to it
+  rawObject.dataset.positionTop = topSpacing + gapHeight + "vh";
+  rawObject.style.top = rawObject.dataset.positionTop;
+
+  rawObject.dataset.positionRight = rightSpacing + "vh";
+  rawObject.style.right = rawObject.dataset.positionRight;
+}
+
+// ===== Dragging Objects ===== //
+function pressObject(on, rawObject) {
+  rawObject.addEventListener(on, (event) => {
+    activeObject = rawObject;
+    isDragging = true;
+
+    activeObject.style.cursor = "grabbing";
+
+    // disable "can't drop here-Symbol" for dragging
+    event.preventDefault();
+
+    // Every press changes position -> new dimensions needed
+    const rect = rawObject.getBoundingClientRect();
+
+    const pointX = event.touches ? event.touches[0].clientX : event.clientX;
+    const pointY = event.touches ? event.touches[0].clientY : event.clientY;
+
+    offsetX = pointX - rect.left;
+    offsetY = pointY - rect.top;
+  });
+}
+function moveObject(move) {
+  // keep grab point under cursor while dragging
+  document.addEventListener(move, (event) => {
+    if (!isDragging) return;
+
+    const pointX = event.touches ? event.touches[0].clientX : event.clientX;
+    const pointY = event.touches ? event.touches[0].clientY : event.clientY;
+
+    activeObject.style.left = pointX - offsetX + "px";
+    activeObject.style.top = pointY - offsetY + "px";
+
+    // reset style right -> only one "anchor"
+    activeObject.style.right = "";
+  })
+}
+function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
+  // when I'm not holding that one klick anymore, then release the cloud
+  document.addEventListener(offCloud, (event) => {
+
+    // it's like vaidating a valid ticket
+    // When no Cloud -> return
+    if (!isDragging || !activeObject.classList.contains("thought-cloud")) return;
+
+    isDragging = false;
+    activeObject.style.cursor = "grab";
+
+    // guard because emotions without zone! --> fixing that later hihi
+    if (!dropZone) return;
+
+    function invadeZoneCloud(indicatorIsInZone) {
+      if (indicatorIsInZone) {
+        if (cloudInZone) {
+          activeObject.style.top = activeObject.dataset.positionTop;
+          activeObject.style.right = activeObject.dataset.positionRight;
+          activeObject.style.left = "";
+          return;
+        }
+        if (releaseButton) {
+          releaseButton.style.visibility = "visible";
+        }
+        dropZone.style.visibility = "hidden";
+
+        cloudInZone = activeObject
+        activeObject.classList.add(activeClass);
+
+        // centering
+        activeObject.classList.remove("floatCloud")
+        activeObject.style.left = "50%";
+        activeObject.style.top = "50%";
+        activeObject.style.transform = "translate(-50%, -50%)";
+
+        const emotionBoxes = document.querySelectorAll(".emotion-box");
+
+        // emotions exist -> reset to default state
+        if (emotionBoxes.length > 0) {
+          console.log("emotions: " + emotionBoxes.length);
+          for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
+            emotionBoxes[emotionNumber].style.visibility = "visible"
+            emotionBoxes[emotionNumber].style.animation = "";
+            emotionBoxes[emotionNumber].classList.remove("consumed");
+
+            emotionBoxes[emotionNumber].classList.remove("pulse");
+            emotionBoxes[emotionNumber].getBoundingClientRect();
+            emotionBoxes[emotionNumber].classList.add("pulse");
+
+            emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
+            emotionBoxes[emotionNumber].style.right = emotionBoxes[emotionNumber].dataset.positionRight;
+            emotionBoxes[emotionNumber].style.left = "";
+          }
+        } else {
+          // first visit -> create emotions
+          createEmotions();
+        }
+      }
+    }
+
+    const zoneRect = dropZone.getBoundingClientRect();
+    if (event.touches) {
+      let fingerIsInZone =
+        // touches doesn't work, because finger is already lifted -> undef. Use changedTouches meowww
+        event.changedTouches[0].clientX > zoneRect.left &&
+        event.changedTouches[0].clientX < zoneRect.right &&
+        event.changedTouches[0].clientY > zoneRect.top &&
+        event.changedTouches[0].clientY < zoneRect.bottom
+
+      invadeZoneCloud(fingerIsInZone);
+    } else {
+      let mouseIsInZone =
+        // is the mouse inside the box?
+        // Start top-left corner (0,0) -> Screens draw pixels starting from top-left!!!
+        event.clientX > zoneRect.left &&
+        event.clientX < zoneRect.right &&
+        event.clientY > zoneRect.top &&
+        event.clientY < zoneRect.bottom
+
+      invadeZoneCloud(mouseIsInZone);
+    }
+  })
+}
+function dropObjectEmotion(offEmotion) {
+  document.addEventListener(offEmotion, (event) => {
+
+    if (!isDragging || !activeObject.classList.contains("emotion-box")) return;
+    isDragging = false;
+
+    activeObject.style.cursor = "grab"
+
+    if (cloudInZone) {
+      const zoneRect = document.getElementById("cloud-drop-zone").getBoundingClientRect();
+
+      if (event.touches) {
+        let fingerIsInZone =
+          event.changedTouches[0].clientX > zoneRect.left &&
+          event.changedTouches[0].clientX < zoneRect.right &&
+          event.changedTouches[0].clientY > zoneRect.top &&
+          event.changedTouches[0].clientY < zoneRect.bottom
+
+        if (fingerIsInZone) consumeEmotion();
+      } else {
+        let mouseIsInZone =
+          event.clientX > zoneRect.left &&
+          event.clientX < zoneRect.right &&
+          event.clientY > zoneRect.top &&
+          event.clientY < zoneRect.bottom
+
+        if (mouseIsInZone) consumeEmotion();
+      }
+    }
+  })
+}
+
+// ===== Visual effects ===== //
 function appearingInputText() {
   if (thoughtInput) {
     // creating the Text inside the textbox letter by letter
@@ -137,336 +447,9 @@ function counterAppearing(thoughtCounter, inputCounter) {
     thoughtCounter.style.filter = "brightness(1)";
   }
 }
-
-
-// Dragging Objects
-function pressObject(on, rawObject) {
-  rawObject.addEventListener(on, (event) => {
-
-
-    activeObject = rawObject;
-    isDragging = true;
-
-    activeObject.style.cursor = "grabbing";
-
-    // No 🚫 "can't drop here-Symbol" is appearing!
-    event.preventDefault();
-
-    // hands back an object with measuremtns -> rectangle
-    const rect = rawObject.getBoundingClientRect();
-
-    if (event.touches) {
-      offsetX = event.touches[0].clientX - rect.left;
-      offsetY = event.touches[0].clientY - rect.top;
-
-    } else {
-      // rect.left -> distance from screen's left edge to cloud's left edge (px)
-      offsetX = event.clientX - rect.left;
-      // rect.top -> distance from screen's top edge to cloud's top edge (px)
-      offsetY = event.clientY - rect.top;
-    }
-  });
-}
-function moveObject(move) {
-
-  // when the mouse is moving measured values for X and Y ensure that mouse stays where I started to grap
-  document.addEventListener(move, (event) => {
-    if (!isDragging) return;
-    // that spot where I klicked
-    if (event.touches) {
-      activeObject.style.left = (event.touches[0].clientX - offsetX) + "px";
-      activeObject.style.top = (event.touches[0].clientY - offsetY) + "px";
-    } else {
-      activeObject.style.left = (event.clientX - offsetX) + "px";
-      activeObject.style.top = (event.clientY - offsetY) + "px";
-
-    }
-    // Object stretches to the left when dragging to the left when that is not cleared haha
-    // reset css settings AND Browser doesn't paint mid-function all at once when even expect of getBoundingClientRect
-    activeObject.style.right = "";
-  })
-}
-function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
-  // when I'm not holding that one klick anymore, then release the cloud
-  document.addEventListener(offCloud, (event) => {
-
-    // it's like vaidating a valid ticket
-    // When no Cloud -> return
-    if (!isDragging || !activeObject.classList.contains("thought-cloud")) return;
-
-    isDragging = false;
-    activeObject.style.cursor = "grab";
-
-    // guard because emotions without zone! --> fixing that later hihi
-    if (!dropZone) return;
-
-    function invadeZoneCloud(indicatorIsInZone) {
-      if (indicatorIsInZone) {
-        if (cloudInZone) {
-          activeObject.style.top = activeObject.dataset.positionTop;
-          activeObject.style.right = activeObject.dataset.positionRight;
-          activeObject.style.left = "";
-          return;
-        }
-        if (releaseButton) {
-          releaseButton.style.visibility = "visible";
-        }
-        dropZone.style.visibility = "hidden";
-
-        cloudInZone = activeObject
-        activeObject.classList.add(activeClass);
-
-        // centering
-        activeObject.classList.remove("floatCloud")
-        activeObject.style.left = "50%";
-        activeObject.style.top = "50%";
-        activeObject.style.transform = "translate(-50%, -50%)";
-
-        const emotionBoxes = document.querySelectorAll(".emotion-box");
-
-        if (emotionBoxes.length > 0) {
-          for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
-            emotionBoxes[emotionNumber].style.visibility = "visible"
-            emotionBoxes[emotionNumber].style.animation = "";
-            emotionBoxes[emotionNumber].classList.remove("consumed");
-
-            emotionBoxes[emotionNumber].classList.remove("pulse");
-            emotionBoxes[emotionNumber].getBoundingClientRect();
-            emotionBoxes[emotionNumber].classList.add("pulse");
-
-            emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
-            emotionBoxes[emotionNumber].style.right = emotionBoxes[emotionNumber].dataset.positionRight;
-            emotionBoxes[emotionNumber].style.left = "";
-          }
-        } else {
-          createEmotions();
-        }
-      }
-    }
-
-    const zoneRect = dropZone.getBoundingClientRect();
-    if (event.touches) {
-      let fingerIsInZone =
-        // touches doesn't work, because finger is already lifted -> undef. Use changedTouches meowww
-        event.changedTouches[0].clientX > zoneRect.left &&
-        event.changedTouches[0].clientX < zoneRect.right &&
-        event.changedTouches[0].clientY > zoneRect.top &&
-        event.changedTouches[0].clientY < zoneRect.bottom
-
-      invadeZoneCloud(fingerIsInZone);
-    } else {
-      let mouseIsInZone =
-        // is the mouse inside the box?
-        // Start top-left corner (0,0) -> Screens draw pixels starting from top-left!!!
-        event.clientX > zoneRect.left &&
-        event.clientX < zoneRect.right &&
-        event.clientY > zoneRect.top &&
-        event.clientY < zoneRect.bottom
-
-      invadeZoneCloud(mouseIsInZone);
-    }
-  })
-}
-function dropObjectEmotion(offEmotion) {
-  document.addEventListener(offEmotion, (event) => {
-
-    if (!isDragging || !activeObject.classList.contains("emotion-box")) return;
-    isDragging = false;
-
-    activeObject.style.cursor = "grab"
-
-    if (cloudInZone) {
-      const zoneRect = document.getElementById("cloud-drop-zone").getBoundingClientRect();
-
-      if (event.touches) {
-        let fingerIsInZone =
-          event.changedTouches[0].clientX > zoneRect.left &&
-          event.changedTouches[0].clientX < zoneRect.right &&
-          event.changedTouches[0].clientY > zoneRect.top &&
-          event.changedTouches[0].clientY < zoneRect.bottom
-
-        if (fingerIsInZone) consumeEmotion();
-      } else {
-        let mouseIsInZone =
-          event.clientX > zoneRect.left &&
-          event.clientX < zoneRect.right &&
-          event.clientY > zoneRect.top &&
-          event.clientY < zoneRect.bottom
-
-        if (mouseIsInZone) consumeEmotion();
-      }
-    }
-  })
-}
-
-
-
-// position Objects
-function positionObject(rawObject, topSpacing, rightSpacing, gapBetween) {
-  // Start position of recreated Clouds at the right of the screen
-  rawObject.dataset.positionTop = topSpacing + gapHeight + "vh";
-  rawObject.style.top = rawObject.dataset.positionTop;
-
-  rawObject.dataset.positionRight = rightSpacing + "vh";
-  rawObject.style.right = rawObject.dataset.positionRight;
-
-  gapHeight += gapBetween;
-}
-
-// Page feature
-function featureThoughts() {
-  let sparkleEffectSwitch = true;
-  // cointainer to collect all thought-inputs
-  const thoughtsContainer = document.getElementById("thoughts-container");
-  // display counter for entered thoughts
-  const thoughtCounter = document.getElementById("thought-counter");
-
-  // when thoughtInput -> this code can run, not? -> skip
-  if (thoughtInput) {
-    let inputCounter = 0;
-
-    thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
-
-    const thoughtsEmotioned = {
-      thought: "",
-      emotions: []
-    };
-
-    // listen for "keydown"
-    thoughtInput.addEventListener("keydown", (event) => {
-
-      // when browser gives me Enter -> div, img, span
-      if (event.key === "Enter" && inputCounter < MAX_THOUGHTS) {
-        inputCounter++;
-
-        counterAppearing(thoughtCounter, inputCounter);
-        createFloatingClouds(thoughtInput.value, thoughtsContainer);
-
-        thoughtsArray.push({ thought: thoughtInput.value, emotions: [] });
-        // my array  ->  JSON.stringify  ->  a JSON string  ->  localStorage holds it
-
-
-        localStorage.setItem("thoughtsData", JSON.stringify(thoughtsArray));
-        // clearing the text-field
-        thoughtInput.value = "";
-      }
-      if (inputCounter === MAX_THOUGHTS && sparkleEffectSwitch) {
-        // creats sparkle effect for readyButton
-        const sparkleVisual = document.getElementById("sparkle-effect");
-        readyButton.style.visibility = "visible";
-        sparkleEffect(sparkleVisual);
-        sparkleEffectSwitch = false;
-      }
-    });
-  }
-}
-function thoughtsRecreateOnDocEmotions() {
-  if (screenEmotions) {
-    let thoughtsJson = localStorage.getItem("thoughtsData");
-    // || [] protects .length from crashing if parse gave nothing!
-    thoughtsArray = JSON.parse(thoughtsJson) || [];
-
-    const thoughtRelease = document.getElementById("thought-release");
-    const cloudDropZone = document.getElementById("cloud-drop-zone");
-
-    if (thoughtRelease) {
-      thoughtRelease.addEventListener("click", () => {
-        cloudInZone.style.top = cloudInZone.dataset.positionTop;
-        cloudInZone.style.right = cloudInZone.dataset.positionRight;
-        cloudInZone.style.left = "";
-        cloudInZone.classList.remove("active-cloud");
-        cloudInZone.classList.add("floatCloud");
-        cloudDropZone.style.visibility = "";
-        thoughtRelease.style.visibility = "";
-        cloudInZone = null;
-      })
-    }
-
-    for (let thoughtCounter = 0; thoughtCounter < thoughtsArray.length; thoughtCounter++) {
-      // Store created cloud
-      const cloud = createFloatingClouds(thoughtsArray[thoughtCounter].thought, screenEmotions);
-      cloud.dataset.thoughtNumber = thoughtCounter
-
-
-      positionObject(cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
-
-      pressObject("mousedown", cloud);
-      pressObject("touchstart", cloud);
-    }
-    moveObject("mousemove");
-    moveObject("touchmove");
-
-    dropObjectCloud("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
-    dropObjectCloud("touchend", cloudDropZone, thoughtRelease, "active-cloud");
-  }
-}
-
-
-// Creation
-function createFloatingClouds(input, container) {
-  // Container for all Clouds
-  const divClouds = document.createElement("div");
-  divClouds.classList.add("thought-cloud");
-
-  // Cloud image create
-  const imgCloud = document.createElement("img");
-  imgCloud.src = "assets/images/ai-generated/thought.png";
-
-  // Text create
-  const thoughtTextCloud = document.createElement("span");
-  thoughtTextCloud.classList.add("thought-text-cloud");
-  // .value is the String I gave -> .textContent is showing the text
-  thoughtTextCloud.textContent = input;
-
-  // put created img, text into Container
-  divClouds.appendChild(imgCloud);
-  divClouds.appendChild(thoughtTextCloud);
-  container.appendChild(divClouds);
-
-  divClouds.classList.add("floatCloud");
-  // give that value for the drag and drop catch later!
-  return divClouds;
-}
-
-function createEmotions() {
-  let offsetEmotionX = 0;
-  let offsetEmotionY = 0;
-
-  if (screenEmotions) {
-    let lineBreak = 0;
-
-    for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
-
-      const emotionBox = document.createElement("div");
-      emotionBox.classList.add("emotion-box");
-
-      const emotionText = document.createElement("span")
-      emotionText.classList.add("emotion-text");
-      emotionText.textContent = EMOTIONS[emotionCounter];
-
-      emotionBox.appendChild(emotionText);
-      screenEmotions.appendChild(emotionBox);
-
-      emotionBox.classList.add("pulse");
-
-      lineBreak = lineBreak + 1;
-
-      if (lineBreak === 6) {
-        rightSpacingEmotion = 160;
-        topSpacingEmotion = -87.5;
-      }
-      positionObject(emotionBox, topSpacingEmotion, rightSpacingEmotion, gapBetweenEmotion)
-      pressObject("mousedown", emotionBox);
-      pressObject("touchstart", emotionBox);
-    }
-    moveObject("mousemove");
-    moveObject("touchmove");
-
-    dropObjectEmotion("mouseup");
-    dropObjectEmotion("touchend");
-  }
-}
 function consumeEmotion() {
+  const cloudReadyToEat = cloudInZone
+
   const eatEmotion = activeObject;
 
   const emotionTextCollect = eatEmotion.textContent
@@ -475,25 +458,22 @@ function consumeEmotion() {
 
   eatEmotion.classList.add("consumed")
 
-  if (cloudInZone) {
-    cloudInZone.classList.add("shiny");
+  if (cloudReadyToEat) {
+    cloudReadyToEat.classList.add("shiny");
+
+    thoughtsAndEmotions[cloudReadyToEat.dataset.thoughtNumber].emotions.push(emotionTextCollect);
+    localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
   }
 
   eatEmotion.addEventListener("animationend", () => {
     eatEmotion.style.visibility = "hidden";
+    cloudReadyToEat.classList.remove("shiny");
     consumedEmotionArray.push(emotionTextCollect);
     console.log(consumedEmotionArray);
-
-    cloudInZone.classList.remove("shiny");
-
-
-    thoughtsArray[cloudInZone.dataset.thoughtNumber].emotions.push(emotionTextCollect);
-    localStorage.setItem("thoughtsData", JSON.stringify(thoughtsArray));
-
   }, { once: true });
 }
 
-//order matters inside a function, not between functions.
+// ----------------------------------- INITIALIZE ----------------------------------- //
 function init() {
   // Navigation
   IndexNavigation();
@@ -507,7 +487,5 @@ function init() {
   appearingInputText();
 }
 
-// only run init when HTML is fullry parsed!  //defer -> also wait's until HTML is parsed -> covers globals  //without defer, globals -> null
-// defer makes the whole script wait for DOM! -> dealy -> saves globals form grabbing -> null
 document.addEventListener("DOMContentLoaded", init);
 

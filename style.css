@@ -15,17 +15,12 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
-
-
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
-
 
 /* ========================= SCREEN 1 ========================= */
 .screen-1-home {
