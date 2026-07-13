@@ -456,3 +456,10 @@ body {
   50%  { filter: brightness(1.2);}
   100% { filter: brightness(1);  }
 }
+
+/* ========================= SCREEN 4 ========================= */
+.screen-4-analyze {
+  background-image: url("assets/images/ai-generated/analyze-background.png");
+  display: flex;
+  flex-direction: column;
+}

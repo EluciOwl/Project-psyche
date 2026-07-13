@@ -28,7 +28,6 @@ let isDragging = false;
 // ----------------------------------- FUNCTIONS ----------------------------------- //
 // ===== Naviagtions ===== //
 function IndexNavigation() {
-  // Home button -> index.html
   const homeButton = document.getElementById("home-button");
   if (homeButton) {
     homeButton.addEventListener("click", () => {
@@ -36,7 +35,6 @@ function IndexNavigation() {
     });
   }
 
-  // Home button -> thoughts.html + emotions.html 
   const homeColoredButton = document.querySelector(".home-colored-button");
   if (homeColoredButton) {
     homeColoredButton.addEventListener("click", () => {
@@ -44,7 +42,6 @@ function IndexNavigation() {
     });
   }
 
-  // Thoughts button on start screen
   const thoughtsButton = document.getElementById("thoughts-button");
   if (thoughtsButton) {
     thoughtsButton.addEventListener("click", () => {
@@ -53,7 +50,7 @@ function IndexNavigation() {
   }
 }
 function readyToEmotionsNavigation() {
-  // readyButton -> emotions.html
+  // Take Clouds onto next screen 
   if (readyButton) {
     readyButton.addEventListener("click", () => {
       window.location.href = "emotions.html";
@@ -64,12 +61,10 @@ function readyToEmotionsNavigation() {
 // ===== Page feature ===== //
 function featureThoughts() {
   let sparkleEffectSwitch = true;
-  // container to collect all thought-inputs
+
   const thoughtsContainer = document.getElementById("thoughts-container");
-  // display counter for entered thoughts
   const thoughtCounter = document.getElementById("thought-counter");
 
-  // guard thoughtInput
   if (thoughtInput) {
     let inputCounter = 0;
     thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
@@ -82,16 +77,13 @@ function featureThoughts() {
         counterAppearing(thoughtCounter, inputCounter);
         createFloatingClouds(thoughtInput.value, thoughtsContainer);
 
-        // 
         thoughtsAndEmotions.push({ thought: thoughtInput.value, emotions: [] });
-
-        // my array  ->  JSON.stringify  ->  a JSON string  ->  localStorage holds it
         localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
+
         // clearing the text-field
         thoughtInput.value = "";
       }
       if (inputCounter === MAX_THOUGHTS && sparkleEffectSwitch) {
-        // creats sparkle effect for readyButton
         const sparkleVisual = document.getElementById("sparkle-effect");
         readyButton.style.visibility = "visible";
         sparkleEffect(sparkleVisual);
@@ -108,22 +100,24 @@ function thoughtsRecreateOnDocEmotions() {
 
   if (screenEmotions) {
     let thoughtsJson = localStorage.getItem("thoughtsData");
-    // || [] protects .length from crashing if parse gave nothing!
+
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
     const thoughtRelease = document.getElementById("thought-release");
     const cloudDropZone = document.getElementById("cloud-drop-zone");
 
     if (thoughtRelease) {
-
       thoughtRelease.addEventListener("click", () => {
         cloudInZone.style.top = cloudInZone.dataset.positionTop;
         cloudInZone.style.right = cloudInZone.dataset.positionRight;
         cloudInZone.style.left = "";
+
         cloudInZone.classList.remove("active-cloud");
         cloudInZone.classList.remove("shiny")
-        cloudInZone.style.transform = "";
         cloudInZone.classList.add("floatCloud");
+        cloudInZone.style.transform = "";
+
+
         cloudDropZone.style.visibility = "";
         thoughtRelease.style.visibility = "";
         cloudInZone = null;
@@ -131,10 +125,9 @@ function thoughtsRecreateOnDocEmotions() {
     }
 
     for (let thoughtCounter = 0; thoughtCounter < thoughtsAndEmotions.length; thoughtCounter++) {
-      // Store created cloud
+
       const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, screenEmotions);
       cloud.dataset.thoughtNumber = thoughtCounter
-
 
       positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
 
@@ -176,7 +169,7 @@ function createFloatingClouds(input, container) {
 }
 function createEmotions() {
 
-  // Start position -> emotions
+  // Set start position
   let rightSpacingEmotion = 180;
   const topSpacingEmotion = 30;
   const gapBetweenEmotion = 8.5;
