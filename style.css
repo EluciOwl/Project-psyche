@@ -1,5 +1,6 @@
 /* ========================= ROOT / HTML ========================= */
-html, body {
+html,
+body {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
@@ -18,8 +19,13 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* ========================= SCREEN 1 ========================= */
@@ -70,7 +76,7 @@ body {
   height: 30%;
 
   font-size: 3vw;
-  overflow:hidden;
+  overflow: hidden;
   color: white;
 
   border: none;
@@ -112,6 +118,7 @@ body {
   flex-direction: column;
 }
 
+
 .home-colored-button {
   display: flex;
   align-self: center;
@@ -127,7 +134,7 @@ body {
 /* img → only controls the image size | <img> picture inside the fram */
 .home-colored-button img {
   height: 18.5vh;
-  filter:drop-shadow(1px 1px 2px rgba(253, 29, 216, 0.548))
+  filter: drop-shadow(1px 1px 2px rgba(253, 29, 216, 0.548))
 }
 
 .home-colored-button:hover {
@@ -135,7 +142,7 @@ body {
   transform: scale(1.05);
 }
 
-#thoughts-input-row { 
+#thoughts-input-row {
   display: flex;
   justify-content: center;
   justify-items: center;
@@ -151,7 +158,7 @@ body {
   width: 20vh;
 
   border-radius: 10%;
-  padding:  1%;
+  padding: 1%;
 
   background:
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
@@ -167,11 +174,25 @@ body {
 }
 
 @keyframes wobble {
-  0%   { transform: rotate(0deg)   scale(1);    }
-  25%  { transform: rotate(-8deg)  scale(1.15); }
-  50%  { transform: rotate(8deg)   scale(1.15); }
-  75%  { transform: rotate(-4deg)  scale(1.08); }
-  100% { transform: rotate(0deg)   scale(1);    }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: rotate(-8deg) scale(1.15);
+  }
+
+  50% {
+    transform: rotate(8deg) scale(1.15);
+  }
+
+  75% {
+    transform: rotate(-4deg) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
 }
 
 #thought-input-box {
@@ -187,10 +208,10 @@ body {
   background:
     linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.05)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.5), rgba(236, 93, 255, 0.2)) border-box;
-  
+
   box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
 
-  filter: brightness(1.7); 
+  filter: brightness(1.7);
   text-shadow: #cc49ff 1px 0 10px;
 }
 
@@ -216,7 +237,7 @@ body {
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 
-  padding:  20% 2.5%;
+  padding: 20% 2.5%;
   visibility: hidden;
 }
 
@@ -227,7 +248,7 @@ body {
     0 0 20px rgba(174, 0, 255, 0.8),
     0 0 35px rgba(255, 71, 230, 0.8);
 
-  filter: brightness(1.8);  
+  filter: brightness(1.8);
 
   transform: translateY(-1px);
   cursor: pointer;
@@ -241,7 +262,7 @@ body {
   position: relative;
 }
 
-/* Creating little balls*/ 
+/* Creating little balls*/
 .particle {
   position: absolute;
   width: 5px;
@@ -252,8 +273,15 @@ body {
 }
 
 @keyframes sparkle {
-  0%    { transform: translateY(0px); opacity: 1;}
-  100%  { transform: translateY(-150px); opacity: 0;}
+  0% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-150px);
+    opacity: 0;
+  }
 }
 
 #thoughts-container {
@@ -264,16 +292,24 @@ body {
   gap: 2.5%;
 }
 
-.thought-cloud {  
+.thought-cloud {
   position: relative;
   display: inline-block;
   width: 20vw;
 }
 
 @keyframes floatCloud {
-  0%   { transform: translateY(0px); }
-  50%  { transform: translateY(15px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .floatCloud {
@@ -288,11 +324,11 @@ body {
   opacity: 80%;
 }
 
-.thought-text-cloud {   
+.thought-text-cloud {
   text-align: left;
   word-break: break-word;
   width: 15vw;
-  
+
   /* position set -> top, bottom, left, right does work now!*/
   /* absolute -> Elemnt taken out of normal flow */
   position: absolute;
@@ -302,7 +338,8 @@ body {
   /* centreing elemtns in parent */
   transform: translate(-50%, -50%);
 
-  color: black;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(-1px 1.5px 1.5px rgba(253, 29, 216, 1));
   font-size: 2vw;
 }
 
@@ -310,12 +347,9 @@ body {
 
 /* ========================= SCREEN 3 ========================= */
 /* This means: modify .home-purple-button -> but only when it's inside .screen-3-emotions */
-.screen-3-emotions .home-colored-button {
-  filter: hue-rotate(270deg);
-}
 
 .screen-3-emotions {
-  background-image: url("assets/images/ai-generated/emotions-background.png");
+  background-image: url("assets/images/ai-generated/thoughts-background.png");
   display: flex;
   flex-direction: column;
 }
@@ -328,7 +362,7 @@ body {
 }
 
 .screen-3-emotions .thought-cloud:hover {
-  filter:brightness(1.1);
+  filter: brightness(1.1);
 }
 
 .screen-3-emotions .thought-cloud.active-cloud {
@@ -343,20 +377,18 @@ body {
 
 #cloud-drop-zone {
   position: absolute;
-  
+
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 
-  pointer-events: none; 
-  width: 30vw;  
+  pointer-events: none;
+  width: 30vw;
   height: 25vh;
   border-radius: 25%;
 
-  border: 2px dashed rgba(0, 255, 221, 0.5);
-  background: linear-gradient(
-    rgba(0, 195, 255, 0.2)
-  );
+  border: 2px dashed rgba(155, 90, 155, 0.5);
+  background: linear-gradient(rgba(204, 0, 255, 0.178));
 }
 
 #drop-text {
@@ -364,13 +396,13 @@ body {
   justify-content: center;
   font-size: 2.5vw;
 
-  color: white;
+  color: rgb(255, 166, 251);
 }
 
 #thought-release {
   visibility: hidden;
   position: absolute;
-  
+
   top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -380,24 +412,32 @@ body {
 
   width: 15%;
   height: 10%;
-  border-radius: 1vw;;
+  border-radius: 1vw;
+  
 
-  font-size: clamp(1em, 2vw, 2.5em);
+  font-size: clamp(2.5em, 3vw, 3.5em);
+  overflow: hidden;
 
-  color: white;
-
-  background: linear-gradient(180deg,
-      rgba(0, 47, 255, 0.4),
-      rgba(0, 183, 255, 0.6),
-      rgba(0, 47, 255, 0.4)); 
-
-
+  color: rgb(255, 255, 255);
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.20), rgba(255, 65, 246, 0.20)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
+     
+     
 }
 
-#thought-release:hover {
-  cursor: pointer;
 
-  filter: brightness(1.15);
+
+#thought-release:hover {
+  color: rgba(222, 139, 255, 0.85);
+  filter: saturate(1);
+  box-shadow:
+    0 0 2px rgba(174, 0, 255, 0.8),
+    0 0 3px rgba(255, 71, 230, 0.8);
+
+  filter: brightness(1.8);
+
+  cursor: pointer;
 }
 
 
@@ -410,14 +450,18 @@ body {
 
   cursor: grab;
 
-  border: solid 1px rgba(255, 255, 255, 0.5);
+  border: solid 1px rgba(225, 0, 255, 0.5);
   min-width: 5vw;
   height: 5vh;
   border-radius: 10%;
 
-    background:
-    linear-gradient(rgba(0, 183, 255, 0.5), rgba(0, 183, 255, 0.25)) padding-box,
-    linear-gradient(45deg, rgba(0, 183, 255, 0.5), hwb(214 1% 0% / 0.5), rgba(0, 255, 200, 0.8)) border-box;
+  color: rgb(255, 255, 255);
+
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
+    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
+
+  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
 }
 
 .emotion-box:hover {
@@ -429,9 +473,17 @@ body {
 }
 
 @keyframes pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2); }
-  100% { transform: scale(1); }  
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .emotion-text {
@@ -439,8 +491,13 @@ body {
 }
 
 @keyframes consumed {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 .consumed {
@@ -448,18 +505,26 @@ body {
 }
 
 .shiny {
-  animation: shiny 0.5s ease-out; 
+  animation: shiny 0.5s ease-out;
 }
 
 @keyframes shiny {
-  0%   { filter: brightness(1);  }
-  50%  { filter: brightness(1.2);}
-  100% { filter: brightness(1);  }
+  0% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.2);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
 }
 
 /* ========================= SCREEN 4 ========================= */
 .screen-4-analyze {
-  background-image: url("assets/images/ai-generated/analyze-background.png");
+  background-image: url("assets/images/ai-generated/thoughts-background.png");
   display: flex;
   flex-direction: column;
 }
