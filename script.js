@@ -27,7 +27,7 @@ let isDragging = false;
 
 // ----------------------------------- FUNCTIONS ----------------------------------- //
 // ===== Naviagtions ===== //
-function IndexNavigation() {
+function menuNavigation() {
   const homeButton = document.getElementById("home-button");
   if (homeButton) {
     homeButton.addEventListener("click", () => {
@@ -48,7 +48,22 @@ function IndexNavigation() {
       window.location.href = "thoughts.html";
     });
   }
+
+  const emotionsButton = document.getElementById("emotions-button");
+  if (emotionsButton) {
+    emotionsButton.addEventListener("click", () => {
+      window.location.href = "emotions.html";
+    })
+  }
+
+  const analyzeButton = document.getElementById("analyze-button");
+  if (analyzeButton) {
+    analyzeButton.addEventListener("click", () => {
+      window.location.href = "analyze.html";
+    })
+  }
 }
+
 function readyToEmotionsNavigation() {
   // Take Clouds onto next screen 
   if (readyButton) {
@@ -192,7 +207,7 @@ function createEmotions() {
 
       emotionBox.classList.add("pulse");
 
-      if (emotionCounter < emotionsAmount/2) {
+      if (emotionCounter < emotionsAmount / 2) {
         positionInRow = emotionCounter;
       } else {
         rightSpacingEmotion = 160;
@@ -469,7 +484,7 @@ function consumeEmotion() {
 // ----------------------------------- INITIALIZE ----------------------------------- //
 function init() {
   // Navigation
-  IndexNavigation();
+  menuNavigation();
   readyToEmotionsNavigation();
 
   // Page feature
