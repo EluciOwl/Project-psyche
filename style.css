@@ -298,7 +298,7 @@ body {
   width: 20vw;
 }
 
-@keyframes floatCloud {
+@keyframes float-cloud {
   0% {
     transform: translateY(0px);
   }
@@ -312,8 +312,8 @@ body {
   }
 }
 
-.floatCloud {
-  animation: floatCloud 4s ease-in-out infinite;
+.float-cloud {
+  animation: float-cloud 4s ease-in-out infinite;
 }
 
 .thought-cloud img {
@@ -399,7 +399,7 @@ body {
   color: rgb(255, 166, 251);
 }
 
-#thought-release {
+#thought-release-or-save {
   visibility: hidden;
   position: absolute;
 
@@ -428,7 +428,7 @@ body {
 
 
 
-#thought-release:hover {
+#thought-release-or-save:hover {
   color: rgba(222, 139, 255, 0.85);
   filter: saturate(1);
   box-shadow:

@@ -1,6 +1,9 @@
 // ----------------------------------- GLOBALS ----------------------------------- //
 const screenEmotions = document.querySelector(".screen-3-emotions");
 
+let saveButtonOn = false;
+
+const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
 
 let thoughtsAndEmotions = [];
 const consumedEmotionArray = [];
@@ -13,7 +16,7 @@ const readyButton = document.getElementById("ready-button");
 
 
 // Amount of useable emotions
-const EMOTIONS = ["Happy", "Calm", "Proud", "Hopeful", "Loved", "Sad", "Angry", "Anxious", "Ashamed", "Lonely"]
+const EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad"]
 
 // position on specific box
 let offsetX = 0;
@@ -110,7 +113,7 @@ function featureThoughts() {
 function thoughtsRecreateOnDocEmotions() {
   // Start position -> clouds
   const topSpacingCloud = 20;
-  const rightSpacingCloud = 10;
+  const rightSpacingCloud = 5;
   const gapBetweenCloud = 20;
 
   if (screenEmotions) {
@@ -118,24 +121,44 @@ function thoughtsRecreateOnDocEmotions() {
 
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
-    const thoughtRelease = document.getElementById("thought-release");
     const cloudDropZone = document.getElementById("cloud-drop-zone");
 
-    if (thoughtRelease) {
-      thoughtRelease.addEventListener("click", () => {
-        cloudInZone.style.top = cloudInZone.dataset.positionTop;
-        cloudInZone.style.right = cloudInZone.dataset.positionRight;
-        cloudInZone.style.left = "";
+    function rePositionCloud() {
+      cloudInZone.style.top = cloudInZone.dataset.positionTop;
+      cloudInZone.style.right = cloudInZone.dataset.positionRight;
+      cloudInZone.style.left = "";
 
-        cloudInZone.classList.remove("active-cloud");
-        cloudInZone.classList.remove("shiny")
-        cloudInZone.classList.add("floatCloud");
-        cloudInZone.style.transform = "";
+      cloudInZone.classList.remove("active-cloud");
+      cloudInZone.classList.remove("shiny")
+      cloudInZone.classList.add("float-cloud");
+      cloudInZone.style.transform = "";
 
 
-        cloudDropZone.style.visibility = "";
-        thoughtRelease.style.visibility = "";
-        cloudInZone = null;
+      cloudDropZone.style.visibility = "";
+      thoughtReleaseOrSave.style.visibility = "";
+      cloudInZone = null;
+
+      thoughtReleaseOrSave.textContent = "Release";
+    }
+
+    if (thoughtReleaseOrSave) {
+
+
+
+      thoughtReleaseOrSave.addEventListener("click", () => {
+        const emotionBoxes = document.querySelectorAll(".emotion-box");
+        if (saveButtonOn) {
+          saveButtonOn = false;
+
+          const saveCloud = cloudInZone
+          saveCloud.classList.add("consumed");
+
+          saveCloud.addEventListener("animationend", () => {
+            saveCloud.style.visibility = "hidden";
+          })
+        }
+        rePositionCloud();
+        emotionRebuild(emotionBoxes, "hidden");
       })
     }
 
@@ -152,8 +175,8 @@ function thoughtsRecreateOnDocEmotions() {
     moveObject("mousemove");
     moveObject("touchmove");
 
-    dropObjectCloud("mouseup", cloudDropZone, thoughtRelease, "active-cloud");
-    dropObjectCloud("touchend", cloudDropZone, thoughtRelease, "active-cloud");
+    dropObjectCloud("mouseup", cloudDropZone, thoughtReleaseOrSave, "active-cloud");
+    dropObjectCloud("touchend", cloudDropZone, thoughtReleaseOrSave, "active-cloud");
   }
 }
 
@@ -178,14 +201,14 @@ function createFloatingClouds(input, container) {
   divClouds.appendChild(thoughtTextCloud);
   container.appendChild(divClouds);
 
-  divClouds.classList.add("floatCloud");
+  divClouds.classList.add("float-cloud");
   // give that value for the drag and drop catch later!
   return divClouds;
 }
 function createEmotions() {
 
   // Set start position
-  let rightSpacingEmotion = 180;
+  let rightSpacingEmotion = 90;
   const topSpacingEmotion = 30;
   const gapBetweenEmotion = 8.5;
 
@@ -210,7 +233,7 @@ function createEmotions() {
       if (emotionCounter < emotionsAmount / 2) {
         positionInRow = emotionCounter;
       } else {
-        rightSpacingEmotion = 160;
+        rightSpacingEmotion = 80;
         positionInRow = emotionCounter - (emotionsAmount / 2);
       }
 
@@ -236,8 +259,25 @@ function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapB
   rawObject.dataset.positionTop = topSpacing + gapHeight + "vh";
   rawObject.style.top = rawObject.dataset.positionTop;
 
-  rawObject.dataset.positionRight = rightSpacing + "vh";
+  rawObject.dataset.positionRight = rightSpacing + "vw";
   rawObject.style.right = rawObject.dataset.positionRight;
+}
+
+function emotionRebuild(emotionBoxes, visibility) {
+
+  for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
+    emotionBoxes[emotionNumber].style.visibility = visibility
+    emotionBoxes[emotionNumber].style.animation = "";
+    emotionBoxes[emotionNumber].classList.remove("consumed");
+
+    emotionBoxes[emotionNumber].classList.remove("pulse");
+    emotionBoxes[emotionNumber].getBoundingClientRect();
+    emotionBoxes[emotionNumber].classList.add("pulse");
+
+    emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
+    emotionBoxes[emotionNumber].style.right = emotionBoxes[emotionNumber].dataset.positionRight;
+    emotionBoxes[emotionNumber].style.left = "";
+  }
 }
 
 // ===== Dragging Objects ===== //
@@ -307,7 +347,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         activeObject.classList.add(activeClass);
 
         // centering
-        activeObject.classList.remove("floatCloud")
+        activeObject.classList.remove("float-cloud")
         activeObject.style.left = "50%";
         activeObject.style.top = "50%";
         activeObject.style.transform = "translate(-50%, -50%)";
@@ -316,20 +356,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
 
         // emotions exist -> reset to default state
         if (emotionBoxes.length > 0) {
-          console.log("emotions: " + emotionBoxes.length);
-          for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
-            emotionBoxes[emotionNumber].style.visibility = "visible"
-            emotionBoxes[emotionNumber].style.animation = "";
-            emotionBoxes[emotionNumber].classList.remove("consumed");
-
-            emotionBoxes[emotionNumber].classList.remove("pulse");
-            emotionBoxes[emotionNumber].getBoundingClientRect();
-            emotionBoxes[emotionNumber].classList.add("pulse");
-
-            emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
-            emotionBoxes[emotionNumber].style.right = emotionBoxes[emotionNumber].dataset.positionRight;
-            emotionBoxes[emotionNumber].style.left = "";
-          }
+          emotionRebuild(emotionBoxes, "visible")
         } else {
           // first visit -> create emotions
           createEmotions();
@@ -457,19 +484,18 @@ function counterAppearing(thoughtCounter, inputCounter) {
 }
 function consumeEmotion() {
   const cloudReadyToEat = cloudInZone
-
   const eatEmotion = activeObject;
-
   const emotionTextCollect = eatEmotion.textContent
 
   eatEmotion.classList.remove("pulse")
-
   eatEmotion.classList.add("consumed")
+
+  const currentThoughtEmotions = thoughtsAndEmotions[cloudReadyToEat.dataset.thoughtNumber].emotions
 
   if (cloudReadyToEat) {
     cloudReadyToEat.classList.add("shiny");
 
-    thoughtsAndEmotions[cloudReadyToEat.dataset.thoughtNumber].emotions.push(emotionTextCollect);
+    currentThoughtEmotions.push(emotionTextCollect);
     localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
   }
 
@@ -479,6 +505,11 @@ function consumeEmotion() {
     consumedEmotionArray.push(emotionTextCollect);
     console.log(consumedEmotionArray);
   }, { once: true });
+
+  if (currentThoughtEmotions.length >= 1) {
+    thoughtReleaseOrSave.textContent = "Save";
+    saveButtonOn = true;
+  }
 }
 
 // ----------------------------------- INITIALIZE ----------------------------------- //
