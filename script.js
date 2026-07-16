@@ -6,6 +6,7 @@ let saveButtonOn = false;
 const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
 
 let thoughtsAndEmotions = [];
+let thoughtsAndEmotionsPieChart = [];
 const consumedEmotionArray = [];
 
 const thoughtInput = document.getElementById("thought-input-box");
@@ -142,9 +143,6 @@ function thoughtsRecreateOnDocEmotions() {
     }
 
     if (thoughtReleaseOrSave) {
-
-
-
       thoughtReleaseOrSave.addEventListener("click", () => {
         const emotionBoxes = document.querySelectorAll(".emotion-box");
         if (saveButtonOn) {
@@ -154,7 +152,24 @@ function thoughtsRecreateOnDocEmotions() {
           saveCloud.classList.add("consumed");
 
           saveCloud.addEventListener("animationend", () => {
-            saveCloud.style.visibility = "hidden";
+
+            let thoughtsPieChart = localStorage.getItem("thoughtsDataPieChart")
+            thoughtsAndEmotionsPieChart = JSON.parse(thoughtsPieChart) || [];
+
+            const saveThoughtEmotions = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber]
+            thoughtsAndEmotionsPieChart.push(saveThoughtEmotions)
+
+            localStorage.setItem("thoughtsDataPieChart", JSON.stringify(thoughtsAndEmotionsPieChart));
+
+            thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
+            saveCloud.remove();
+
+            localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
+
+            const remainingThoughts = document.querySelectorAll(".thought-cloud")
+            for (let thoughtsNumber = 0; thoughtsNumber < remainingThoughts.length; thoughtsNumber++) {
+              remainingThoughts[thoughtsNumber].dataset.thoughtNumber = thoughtsNumber;
+            }
           })
         }
         rePositionCloud();
