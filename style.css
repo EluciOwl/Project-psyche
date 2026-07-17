@@ -1,8 +1,7 @@
 /* ========================= ROOT / HTML ========================= */
-html,
-body {
-  height: 100vh;
-  width: 100vw;
+html, body {
+  height: 100%;
+  width: 100%;
   overflow: hidden;
   user-select: none;
 }
@@ -527,4 +526,16 @@ body {
   background-image: url("assets/images/ai-generated/thoughts-background.png");
   display: flex;
   flex-direction: column;
+}
+
+#pie-chart-style {
+  margin: 0 auto;
+
+  width: 30%;
+
+  filter: opacity(0.8);
+}
+
+#pie-chart-style:hover {
+  cursor: pointer;
 }

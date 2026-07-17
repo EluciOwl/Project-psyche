@@ -1,12 +1,14 @@
 // ----------------------------------- GLOBALS ----------------------------------- //
 const screenEmotions = document.querySelector(".screen-3-emotions");
+const screenAnalyze = document.querySelector(".screen-4-analyze");
+
 
 let saveButtonOn = false;
 
 const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
 
 let thoughtsAndEmotions = [];
-let thoughtsAndEmotionsPieChart = [];
+let savedThoughtsAndEmotions = [];
 const consumedEmotionArray = [];
 
 const thoughtInput = document.getElementById("thought-input-box");
@@ -97,7 +99,7 @@ function featureThoughts() {
         createFloatingClouds(thoughtInput.value, thoughtsContainer);
 
         thoughtsAndEmotions.push({ thought: thoughtInput.value, emotions: [] });
-        localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
+        localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
         // clearing the text-field
         thoughtInput.value = "";
@@ -118,7 +120,7 @@ function thoughtsRecreateOnDocEmotions() {
   const gapBetweenCloud = 20;
 
   if (screenEmotions) {
-    let thoughtsJson = localStorage.getItem("thoughtsData");
+    let thoughtsJson = localStorage.getItem("thoughtsAndEmotions");
 
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
@@ -153,18 +155,16 @@ function thoughtsRecreateOnDocEmotions() {
 
           saveCloud.addEventListener("animationend", () => {
 
-            let thoughtsPieChart = localStorage.getItem("thoughtsDataPieChart")
-            thoughtsAndEmotionsPieChart = JSON.parse(thoughtsPieChart) || [];
+            let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions")
+            savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
-            const saveThoughtEmotions = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber]
-            thoughtsAndEmotionsPieChart.push(saveThoughtEmotions)
-
-            localStorage.setItem("thoughtsDataPieChart", JSON.stringify(thoughtsAndEmotionsPieChart));
+            const thoughtToSave = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber]
+            savedThoughtsAndEmotions.push(thoughtToSave)
+            localStorage.setItem("savedThoughtsAndEmotions", JSON.stringify(savedThoughtsAndEmotions));
 
             thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
             saveCloud.remove();
-
-            localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
+            localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
             const remainingThoughts = document.querySelectorAll(".thought-cloud")
             for (let thoughtsNumber = 0; thoughtsNumber < remainingThoughts.length; thoughtsNumber++) {
@@ -264,6 +264,43 @@ function createEmotions() {
     dropObjectEmotion("touchend");
   }
 }
+function pieChart() {
+  if (screenAnalyze) {
+    const emotionTally = {};
+
+    let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions")
+    savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
+
+    for (let entrieEmotionsNumber = 0; entrieEmotionsNumber < savedThoughtsAndEmotions.length; entrieEmotionsNumber++) {
+      const currentEmotions = savedThoughtsAndEmotions[entrieEmotionsNumber].emotions
+      
+      for (let emotionNumber = 0; emotionNumber < currentEmotions.length; emotionNumber++) {
+       const thatEmotion =  currentEmotions[emotionNumber]
+       if (!emotionTally[thatEmotion]) {
+        emotionTally[thatEmotion] = 1;
+       } else {
+        emotionTally[thatEmotion] += 1;
+       }
+      }
+    }
+    console.log(emotionTally);
+
+    const labels = Object.keys(emotionTally);
+    const numbers = Object.values(emotionTally);
+    const pieChartElement = document.getElementById("pie-chart");
+
+    const pieConfig = {
+      type: "pie",
+      data: {
+        labels: labels,
+        datasets: [{ data: numbers }]
+      }
+    }
+
+    new Chart(pieChartElement, pieConfig)
+  }
+}
+
 
 // ===== Position Objects ===== //
 function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapBetween) {
@@ -277,7 +314,6 @@ function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapB
   rawObject.dataset.positionRight = rightSpacing + "vw";
   rawObject.style.right = rawObject.dataset.positionRight;
 }
-
 function emotionRebuild(emotionBoxes, visibility) {
 
   for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
@@ -511,7 +547,7 @@ function consumeEmotion() {
     cloudReadyToEat.classList.add("shiny");
 
     currentThoughtEmotions.push(emotionTextCollect);
-    localStorage.setItem("thoughtsData", JSON.stringify(thoughtsAndEmotions));
+    localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
   }
 
   eatEmotion.addEventListener("animationend", () => {
@@ -536,6 +572,7 @@ function init() {
   // Page feature
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
+  pieChart(); 
 
   // Visual effects
   appearingInputText();
