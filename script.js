@@ -92,17 +92,17 @@ function featureThoughts() {
 
     // Press Enter -> thought counter + 1, create cloud
     thoughtInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && inputCounter < MAX_THOUGHTS) {
-        inputCounter++;
+      const cleanValue = thoughtInput.value.trim();
+      if (event.key === "Enter" && cleanValue !== "" && inputCounter < MAX_THOUGHTS) {
+          inputCounter++;
+          counterAppearing(thoughtCounter, inputCounter);
+          createFloatingClouds(cleanValue, thoughtsContainer);
 
-        counterAppearing(thoughtCounter, inputCounter);
-        createFloatingClouds(thoughtInput.value, thoughtsContainer);
+          thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
+          localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
-        thoughtsAndEmotions.push({ thought: thoughtInput.value, emotions: [] });
-        localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
-
-        // clearing the text-field
-        thoughtInput.value = "";
+          // clearing the text-field
+          thoughtInput.value = "";
       }
       if (inputCounter === MAX_THOUGHTS && sparkleEffectSwitch) {
         const sparkleVisual = document.getElementById("sparkle-effect");
@@ -236,7 +236,7 @@ function createEmotions() {
       const emotionBox = document.createElement("div");
       emotionBox.classList.add("emotion-box");
 
-      const emotionText = document.createElement("span")
+      const emotionText = document.createElement("span");
       emotionText.classList.add("emotion-text");
       emotionText.textContent = EMOTIONS[emotionCounter];
 
@@ -273,14 +273,14 @@ function pieChart() {
 
     for (let entrieEmotionsNumber = 0; entrieEmotionsNumber < savedThoughtsAndEmotions.length; entrieEmotionsNumber++) {
       const currentEmotions = savedThoughtsAndEmotions[entrieEmotionsNumber].emotions
-      
+
       for (let emotionNumber = 0; emotionNumber < currentEmotions.length; emotionNumber++) {
-       const thatEmotion =  currentEmotions[emotionNumber]
-       if (!emotionTally[thatEmotion]) {
-        emotionTally[thatEmotion] = 1;
-       } else {
-        emotionTally[thatEmotion] += 1;
-       }
+        const thatEmotion = currentEmotions[emotionNumber]
+        if (!emotionTally[thatEmotion]) {
+          emotionTally[thatEmotion] = 1;
+        } else {
+          emotionTally[thatEmotion] += 1;
+        }
       }
     }
     console.log(emotionTally);
@@ -572,7 +572,7 @@ function init() {
   // Page feature
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
-  pieChart(); 
+  pieChart();
 
   // Visual effects
   appearingInputText();
