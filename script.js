@@ -227,6 +227,19 @@ function createFloatingClouds(input, container) {
   // .value is the String I gave -> .textContent is showing the text
   thoughtTextCloud.textContent = input;
 
+  
+  let inputLength = input.replace(/ +/g, " ").length;
+  console.log(inputLength);
+
+  const startSize = 2.5;
+  const shrinkFactor = 0.15;
+  let cloudFontSize = Math.max(1, startSize - (Math.sqrt(inputLength) * shrinkFactor));
+
+
+  thoughtTextCloud.style.fontSize = cloudFontSize + "vw";
+
+
+
   // put created img, text into Container
   divClouds.appendChild(imgCloud);
   divClouds.appendChild(thoughtTextCloud);
