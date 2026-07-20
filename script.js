@@ -13,7 +13,7 @@ const consumedEmotionArray = [];
 
 const thoughtInput = document.getElementById("thought-input-box");
 
-const MAX_THOUGHTS = 4;
+const MAX_THOUGHTS = 8;
 
 const readyButton = document.getElementById("ready-button");
 
@@ -86,30 +86,46 @@ function featureThoughts() {
   const thoughtsContainer = document.getElementById("thoughts-container");
   const thoughtCounter = document.getElementById("thought-counter");
 
+
   if (thoughtInput) {
-    let inputCounter = 0;
+
+    let savedThoughtsJson = localStorage.getItem("thoughtsAndEmotions")
+    thoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
+
+    let inputCounter = thoughtsAndEmotions.length
     thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
 
-    // Press Enter -> thought counter + 1, create cloud
-    thoughtInput.addEventListener("keydown", (event) => {
-      const cleanValue = thoughtInput.value.trim();
-      if (event.key === "Enter" && cleanValue !== "" && inputCounter < MAX_THOUGHTS) {
-          inputCounter++;
-          counterAppearing(thoughtCounter, inputCounter);
-          createFloatingClouds(cleanValue, thoughtsContainer);
-
-          thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
-          localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
-
-          // clearing the text-field
-          thoughtInput.value = "";
-      }
-      if (inputCounter === MAX_THOUGHTS && sparkleEffectSwitch) {
+    function readyAndSparkle() {
+      if (inputCounter > 0 && sparkleEffectSwitch) {
         const sparkleVisual = document.getElementById("sparkle-effect");
         readyButton.style.visibility = "visible";
         sparkleEffect(sparkleVisual);
         sparkleEffectSwitch = false;
       }
+    }
+
+    readyAndSparkle();
+    counterAppearing(thoughtCounter, inputCounter);
+
+    for (let cloudNumber = 0; cloudNumber < inputCounter; cloudNumber++) {
+      createFloatingClouds(thoughtsAndEmotions[cloudNumber].thought, thoughtsContainer);
+    }
+    // Press Enter -> thought counter + 1, create cloud
+    thoughtInput.addEventListener("keydown", (event) => {
+      const cleanValue = thoughtInput.value.trim();
+      if (event.key === "Enter" && cleanValue !== "" && inputCounter < MAX_THOUGHTS) {
+
+        inputCounter++;
+        counterAppearing(thoughtCounter, inputCounter);
+        createFloatingClouds(cleanValue, thoughtsContainer);
+
+        thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
+        localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
+
+        // clearing the text-field
+        thoughtInput.value = "";
+      }
+      readyAndSparkle();
     });
   }
 }
@@ -519,18 +535,9 @@ function counterAppearing(thoughtCounter, inputCounter) {
   thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
 
   // thoughtCounter will wobble and goes green when MAX_THOUGHTS
-  if (inputCounter > 3) {
+  if (inputCounter === MAX_THOUGHTS) {
     thoughtCounter.style.filter = "brightness(1.3)";
     thoughtCounter.classList.add("wobble");
-  }
-  else if (inputCounter > 2) {
-    thoughtCounter.style.filter = "brightness(1.2)";
-  }
-  else if (inputCounter > 1) {
-    thoughtCounter.style.filter = "brightness(1.1)";
-  }
-  else {
-    thoughtCounter.style.filter = "brightness(1)";
   }
 }
 function consumeEmotion() {
