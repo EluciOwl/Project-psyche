@@ -311,3 +311,18 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **💡**: One `animation` slot per element, later class wins, animations stomp inline transforms
   - analogy: "shiny covers floatCloud's eyes, and while blind, floatCloud can't do its job (hiding the shift). Hands off &rarr; floatCloud grabs the wheel again."
 - **👀**: `getBoundingClientRect()` measures what's on screen, transforms included
+
+
+## 2026-07-20
+### **`JS`** - cloud font-size shrink aggressive with growing characters
+
+- **🐛**: Medium-length thoughts looked way too small even though the cloud had free space
+
+![font size shrink aggressive](/bugs/bug-images/font-size-shrink-aggressive.png)
+
+- **🔍**: Font-size formula shrank linearly per character `size = 4 - length * 0.065`
+- **🔧**: Shrink by `Math.sqrt(inputLength)` instead of raw length
+
+![font size shrink aggressive fix](/bugs/bug-images/font-size-shrink-aggressive-fix.png)
+
+- **💡**: Linear punishment per character over-shrinks anything that wraps
