@@ -326,3 +326,12 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 ![font size shrink aggressive fix](/bugs/bug-images/font-size-shrink-aggressive-fix.png)
 
 - **💡**: Linear punishment per character over-shrinks anything that wraps
+
+## 2026-07-22
+### **`JS`** - Fast cloud save breaks shine + fade animation
+
+- **🐛**: Cloud saving fast broke the shine and the fade animation, slow was fine.
+- **🔍**: Two animations (`shiny`0.5s, `consumed`1s) on shared elements; `animationend` fires for any animation and doesn't name-check 
+- **🔧**: `event.animationName !== "consumed"`guard on the save listener. Reflow-restart sandwich for re-triggering `shiny`.
+  &rarr; data logic runs at click-time, visual logic in `animationend`
+- **💡**: animation timers and JS execution are separate clocks, bugs live where they overlap.
