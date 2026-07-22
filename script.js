@@ -141,7 +141,18 @@ function thoughtsRecreateOnDocEmotions() {
 
     const cloudDropZone = document.getElementById("cloud-drop-zone");
 
-    function resetZone() {
+    function resetZone(cloudWasSaved) {
+      if (!cloudWasSaved) {
+        cloudInZone.style.top = cloudInZone.dataset.positionTop;
+        cloudInZone.style.right = cloudInZone.dataset.positionRight;
+        cloudInZone.style.left = "";
+
+        cloudInZone.classList.remove("active-cloud");
+        cloudInZone.classList.remove("shiny")
+        cloudInZone.classList.add("float-cloud");
+      }
+
+      cloudInZone.style.transform = "";
       cloudDropZone.style.visibility = "";
       thoughtReleaseOrSave.style.visibility = "";
       cloudInZone = null;
@@ -180,9 +191,11 @@ function thoughtsRecreateOnDocEmotions() {
             if (remainingThoughts.length > 3) {
               remainingThoughts[3].style.visibility = "visible";
             }
-            resetZone();
+            resetZone(true);
           })
           emotionRebuild(emotionBoxes, "hidden");
+        } else {
+          resetZone(false);
         }
       })
     }
