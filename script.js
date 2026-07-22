@@ -2,7 +2,6 @@
 const screenEmotions = document.querySelector(".screen-3-emotions");
 const screenAnalyze = document.querySelector(".screen-4-analyze");
 
-
 let saveButtonOn = false;
 
 const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
@@ -142,17 +141,7 @@ function thoughtsRecreateOnDocEmotions() {
 
     const cloudDropZone = document.getElementById("cloud-drop-zone");
 
-    function rePositionCloud() {
-      cloudInZone.style.top = cloudInZone.dataset.positionTop;
-      cloudInZone.style.right = cloudInZone.dataset.positionRight;
-      cloudInZone.style.left = "";
-
-      cloudInZone.classList.remove("active-cloud");
-      cloudInZone.classList.remove("shiny")
-      cloudInZone.classList.add("float-cloud");
-      cloudInZone.style.transform = "";
-
-
+    function resetZone() {
       cloudDropZone.style.visibility = "";
       thoughtReleaseOrSave.style.visibility = "";
       cloudInZone = null;
@@ -168,28 +157,33 @@ function thoughtsRecreateOnDocEmotions() {
 
           const saveCloud = cloudInZone
           saveCloud.classList.add("consumed");
+          saveCloud.classList.remove("shiny");
+          let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions")
+          savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
-          saveCloud.addEventListener("animationend", () => {
+          const thoughtToSave = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber]
+          savedThoughtsAndEmotions.push(thoughtToSave)
+          localStorage.setItem("savedThoughtsAndEmotions", JSON.stringify(savedThoughtsAndEmotions));
 
-            let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions")
-            savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
+          thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
+          localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
-            const thoughtToSave = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber]
-            savedThoughtsAndEmotions.push(thoughtToSave)
-            localStorage.setItem("savedThoughtsAndEmotions", JSON.stringify(savedThoughtsAndEmotions));
-
-            thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
+          saveCloud.addEventListener("animationend", (event) => {
+            if (event.animationName !== "consumed") return;
             saveCloud.remove();
-            localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
             const remainingThoughts = document.querySelectorAll(".thought-cloud")
             for (let thoughtsNumber = 0; thoughtsNumber < remainingThoughts.length; thoughtsNumber++) {
               remainingThoughts[thoughtsNumber].dataset.thoughtNumber = thoughtsNumber;
+              positionObject(thoughtsNumber, remainingThoughts[thoughtsNumber], topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
             }
+            if (remainingThoughts.length > 3) {
+              remainingThoughts[3].style.visibility = "visible";
+            }
+            resetZone();
           })
+          emotionRebuild(emotionBoxes, "hidden");
         }
-        rePositionCloud();
-        emotionRebuild(emotionBoxes, "hidden");
       })
     }
 
@@ -198,7 +192,12 @@ function thoughtsRecreateOnDocEmotions() {
       const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, screenEmotions);
       cloud.dataset.thoughtNumber = thoughtCounter
 
+      if (thoughtCounter > 3) {
+        cloud.style.visibility = "hidden";
+      }
+
       positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
+
 
       pressObject("mousedown", cloud);
       pressObject("touchstart", cloud);
@@ -227,18 +226,15 @@ function createFloatingClouds(input, container) {
   // .value is the String I gave -> .textContent is showing the text
   thoughtTextCloud.textContent = input;
 
-  
-  let inputLength = input.replace(/ +/g, " ").length;
-  console.log(inputLength);
 
-  const startSize = 2.5;
+  let inputLength = input.replace(/ +/g, " ").length;
+
+  const startSize = 2.75;
   const shrinkFactor = 0.15;
   let cloudFontSize = Math.max(1, startSize - (Math.sqrt(inputLength) * shrinkFactor));
 
 
   thoughtTextCloud.style.fontSize = cloudFontSize + "vw";
-
-
 
   // put created img, text into Container
   divClouds.appendChild(imgCloud);
@@ -312,7 +308,6 @@ function pieChart() {
         }
       }
     }
-    console.log(emotionTally);
 
     const labels = Object.keys(emotionTally);
     const numbers = Object.values(emotionTally);
@@ -564,6 +559,8 @@ function consumeEmotion() {
   const currentThoughtEmotions = thoughtsAndEmotions[cloudReadyToEat.dataset.thoughtNumber].emotions
 
   if (cloudReadyToEat) {
+    cloudReadyToEat.classList.remove("shiny");
+    cloudReadyToEat.getBoundingClientRect();   // force reflow
     cloudReadyToEat.classList.add("shiny");
 
     currentThoughtEmotions.push(emotionTextCollect);
@@ -572,9 +569,7 @@ function consumeEmotion() {
 
   eatEmotion.addEventListener("animationend", () => {
     eatEmotion.style.visibility = "hidden";
-    cloudReadyToEat.classList.remove("shiny");
     consumedEmotionArray.push(emotionTextCollect);
-    console.log(consumedEmotionArray);
   }, { once: true });
 
   if (currentThoughtEmotions.length >= 1) {
@@ -598,5 +593,4 @@ function init() {
   appearingInputText();
 }
 
-document.addEventListener("DOMContentLoaded", init);
-
+document.addEventListener("DOMContentLoaded", init)
