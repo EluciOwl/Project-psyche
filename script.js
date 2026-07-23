@@ -2,6 +2,10 @@
 const screenEmotions = document.querySelector(".screen-3-emotions");
 const screenAnalyze = document.querySelector(".screen-4-analyze");
 
+
+const emotionsContainer = document.getElementById("emotions-container");
+const thoughtsCollectedContainer = document.getElementById("thoughts-collected-container");
+
 let saveButtonOn = false;
 
 const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
@@ -23,6 +27,8 @@ const EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hop
 // position on specific box
 let offsetX = 0;
 let offsetY = 0;
+let offsetXEmotionsContainer = 0;
+let offsetYEmotionsContainer = 0;
 
 // Default state
 let activeObject = null;
@@ -193,10 +199,10 @@ function thoughtsRecreateOnDocEmotions() {
             }
             resetZone(true);
           })
-          emotionRebuild(emotionBoxes, "hidden");
         } else {
           resetZone(false);
         }
+        emotionRebuild(emotionBoxes, "hidden");
       })
     }
 
@@ -209,7 +215,7 @@ function thoughtsRecreateOnDocEmotions() {
         cloud.style.visibility = "hidden";
       }
 
-      positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
+     positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
 
 
       pressObject("mousedown", cloud);
@@ -261,11 +267,11 @@ function createFloatingClouds(input, container) {
 function createEmotions() {
 
   // Set start position
-  let rightSpacingEmotion = 90;
-  const topSpacingEmotion = 30;
-  const gapBetweenEmotion = 8.5;
+  let rightSpacingEmotion = 75;
+  const topSpacingEmotion = 5;
+  const gapBetweenEmotion = 15;
 
-  if (screenEmotions) {
+  if (emotionsContainer) {
     let positionInRow;
     const emotionsAmount = EMOTIONS.length;
 
@@ -279,14 +285,14 @@ function createEmotions() {
       emotionText.textContent = EMOTIONS[emotionCounter];
 
       emotionBox.appendChild(emotionText);
-      screenEmotions.appendChild(emotionBox);
+      emotionsContainer.appendChild(emotionBox);
 
       emotionBox.classList.add("pulse");
 
       if (emotionCounter < emotionsAmount / 2) {
         positionInRow = emotionCounter;
       } else {
-        rightSpacingEmotion = 80;
+        rightSpacingEmotion = 50;
         positionInRow = emotionCounter - (emotionsAmount / 2);
       }
 
@@ -345,10 +351,10 @@ function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapB
   const gapHeight = gapBetween * counterObject;
 
   // dataset = home position, drag-and-drop reset snaps back to it
-  rawObject.dataset.positionTop = topSpacing + gapHeight + "vh";
+  rawObject.dataset.positionTop = topSpacing + gapHeight + "%";
   rawObject.style.top = rawObject.dataset.positionTop;
 
-  rawObject.dataset.positionRight = rightSpacing + "vw";
+  rawObject.dataset.positionRight = rightSpacing + "%";
   rawObject.style.right = rawObject.dataset.positionRight;
 }
 function emotionRebuild(emotionBoxes, visibility) {
@@ -380,13 +386,22 @@ function pressObject(on, rawObject) {
     event.preventDefault();
 
     // Every press changes position -> new dimensions needed
-    const rect = rawObject.getBoundingClientRect();
+    const rectObject = rawObject.getBoundingClientRect();
+    const rectEmotionsContainer = emotionsContainer.getBoundingClientRect();
+
+    console.log(rectObject.top);
 
     const pointX = event.touches ? event.touches[0].clientX : event.clientX;
     const pointY = event.touches ? event.touches[0].clientY : event.clientY;
 
-    offsetX = pointX - rect.left;
-    offsetY = pointY - rect.top;
+    offsetX = pointX - rectObject.left;
+    offsetY = pointY - rectObject.top;
+
+    offsetXEmotionsContainer = rectEmotionsContainer.left;
+    offsetYEmotionsContainer = rectEmotionsContainer.top;
+
+    console.log(offsetYEmotionsContainer);
+
   });
 }
 function moveObject(move) {
@@ -397,8 +412,15 @@ function moveObject(move) {
     const pointX = event.touches ? event.touches[0].clientX : event.clientX;
     const pointY = event.touches ? event.touches[0].clientY : event.clientY;
 
-    activeObject.style.left = pointX - offsetX + "px";
-    activeObject.style.top = pointY - offsetY + "px";
+    if (activeObject.classList.contains("emotion-box")) {
+      activeObject.style.left = (pointX - offsetX - offsetXEmotionsContainer) + "px";
+      activeObject.style.top = (pointY - offsetY - offsetYEmotionsContainer) + "px";
+    } else {
+      activeObject.style.left = (pointX - offsetX) + "px";
+      activeObject.style.top = (pointY - offsetY) + "px";
+    }
+
+    console.log(activeObject.style.top);
 
     // reset style right -> only one "anchor"
     activeObject.style.right = "";
@@ -477,7 +499,6 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
 }
 function dropObjectEmotion(offEmotion) {
   document.addEventListener(offEmotion, (event) => {
-
     if (!isDragging || !activeObject.classList.contains("emotion-box")) return;
     isDragging = false;
 

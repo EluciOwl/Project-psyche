@@ -10,12 +10,21 @@
 </head>
 
 <body class="screen-3-emotions">
-  <button class="home-colored-button">
-    <img
-      src="assets/images/ai-generated/home-thoughts.png"
-      alt="home">
-  </button>
+  <div id="left-row">
+    <div id="adjust-emotions-input-box">
+      <input type="text"
+              id="emotions-input-box"
+              maxlength="105"
+              autocomplete="off">
+    </div>
+  </div>
+  <div id="emotions-container"></div>
   <div id="middle-row">
+    <button class="home-colored-button">
+      <img
+        src="assets/images/ai-generated/home-thoughts.png"
+        alt="home">
+    </button>
     <div id="cloud-drop-zone">
       <span id="drop-text">drop here</span>
     </div>

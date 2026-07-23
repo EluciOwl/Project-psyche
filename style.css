@@ -350,8 +350,6 @@ body {
 
 .screen-3-emotions {
   background-image: url("assets/images/ai-generated/thoughts-background.png");
-  display: flex;
-  flex-direction: column;
 }
 
 .screen-3-emotions .thought-cloud {
@@ -371,17 +369,27 @@ body {
   pointer-events: none;
 }
 
+
 #middle-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   width: fit-content;
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 100vh;
+  width: 30vw;
+
+  justify-content: flex-start;
 }
 
 #cloud-drop-zone {
-  position: absolute;
-
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
   pointer-events: none;
   width: 30vw;
   height: 25vh;
@@ -401,32 +409,23 @@ body {
 
 #thought-release-or-save {
   visibility: hidden;
-  position: absolute;
 
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  margin-top: 7.5%;
+  margin-top: 15%;
   border: none;
 
-  width: 15%;
+  width: 45%;
   height: 10%;
   border-radius: 1vw;
 
 
-  font-size: clamp(2.5em, 3vw, 3.5em);
+  font-size: 3vw;
   overflow: hidden;
 
   color: rgb(255, 255, 255);
   background:
     linear-gradient(rgba(245, 4, 253, 0.20), rgba(255, 65, 246, 0.20)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
-
-
 }
-
-
 
 #thought-release-or-save:hover {
   color: rgba(222, 139, 255, 0.85);
@@ -440,10 +439,29 @@ body {
   cursor: pointer;
 }
 
+/* IN PROGRESS 
+#thoughts-collected-container {
 
+}
+*/
+
+#emotions-container {
+  width: 30%;
+  height: 60%;
+
+  position: absolute;
+  top: 0%;
+  left: 0;
+  transform: translateY(50%);
+
+  z-index: 1000;
+} 
 
 .emotion-box {
+  top: 5%;
+
   position: absolute;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -455,12 +473,11 @@ body {
   height: 5vh;
   border-radius: 10%;
 
-  color: rgb(255, 255, 255);
 
+  color: rgb(255, 255, 255);
   background:
     linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
     linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
-
   filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
 }
 
@@ -522,6 +539,47 @@ body {
   }
 }
 
+#emotions-input-box {
+  margin-top: 10%;
+  margin-left: 15%;
+
+  width: 200%;
+  height: 50%;
+  border-radius: 1vw;
+
+  font-size: 200%;
+  color: white;
+
+  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
+
+  box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
+    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
+
+  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
+  text-shadow: #cc49ff 1px 0 10px;
+}
+
+#emotions-input-box:focus {
+  outline: none;
+
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
+}
+
+#adjust-emotions-input-box {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  width: 20%;
+  height: 15%;
+}
+
+
+
 /* ========================= SCREEN 4 ========================= */
 .screen-4-analyze {
   background-image: url("assets/images/ai-generated/thoughts-background.png");
@@ -540,3 +598,4 @@ body {
 #pie-chart-style:hover {
   cursor: pointer;
 }
+
