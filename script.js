@@ -2,6 +2,7 @@
 const screenEmotions = document.querySelector(".screen-3-emotions");
 const screenAnalyze = document.querySelector(".screen-4-analyze");
 
+const cloudDropZone = document.getElementById("cloud-drop-zone");
 
 const emotionsContainer = document.getElementById("emotions-container");
 const thoughtsCollectedContainer = document.getElementById("thoughts-collected-container");
@@ -145,7 +146,7 @@ function thoughtsRecreateOnDocEmotions() {
 
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
-    const cloudDropZone = document.getElementById("cloud-drop-zone");
+
 
     function resetZone(cloudWasSaved) {
       if (!cloudWasSaved) {
@@ -389,8 +390,6 @@ function pressObject(on, rawObject) {
     const rectObject = rawObject.getBoundingClientRect();
     const rectEmotionsContainer = emotionsContainer.getBoundingClientRect();
 
-    console.log(rectObject.top);
-
     const pointX = event.touches ? event.touches[0].clientX : event.clientX;
     const pointY = event.touches ? event.touches[0].clientY : event.clientY;
 
@@ -399,9 +398,6 @@ function pressObject(on, rawObject) {
 
     offsetXEmotionsContainer = rectEmotionsContainer.left;
     offsetYEmotionsContainer = rectEmotionsContainer.top;
-
-    console.log(offsetYEmotionsContainer);
-
   });
 }
 function moveObject(move) {
@@ -419,8 +415,6 @@ function moveObject(move) {
       activeObject.style.left = (pointX - offsetX) + "px";
       activeObject.style.top = (pointY - offsetY) + "px";
     }
-
-    console.log(activeObject.style.top);
 
     // reset style right -> only one "anchor"
     activeObject.style.right = "";
@@ -456,11 +450,24 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         cloudInZone = activeObject
         activeObject.classList.add(activeClass);
 
+        const rectCloudDropZone = cloudDropZone.getBoundingClientRect();
+        const centerX = rectCloudDropZone.left + (rectCloudDropZone.width / 2);
+        const centerY = rectCloudDropZone.top + (rectCloudDropZone.height / 2);
+
         // centering
         activeObject.classList.remove("float-cloud")
-        activeObject.style.left = "50%";
-        activeObject.style.top = "50%";
+        activeObject.style.left = (centerX / window.innerWidth) * 100 + "%";
+        activeObject.style.top =  (centerY / window.innerHeight) * 100 + "%";
         activeObject.style.transform = "translate(-50%, -50%)";
+
+        // Testing
+        console.log("centerX: "+ centerX);
+        console.log("centerY: "+ centerY);
+        console.log("innerWidth: " + window.innerWidth);
+        console.log("innerHeight: " + window.innerHeight);
+
+        console.log("activeObject.style.left: " + activeObject.style.left);
+        console.log("activeObject.style.top: " + activeObject.style.top);
 
         const emotionBoxes = document.querySelectorAll(".emotion-box");
 
