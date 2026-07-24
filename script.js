@@ -5,7 +5,7 @@ const screenAnalyze = document.querySelector(".screen-4-analyze");
 const cloudDropZone = document.getElementById("cloud-drop-zone");
 
 const emotionsContainer = document.getElementById("emotions-container");
-const thoughtsCollectedContainer = document.getElementById("thoughts-collected-container");
+const thoughtsPanel = document.getElementById("thoughts-panel");
 
 let saveButtonOn = false;
 
@@ -23,13 +23,15 @@ const readyButton = document.getElementById("ready-button");
 
 
 // Amount of useable emotions
-const EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad"]
+const EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad", "Excited", "Guilty"]
 
 // position on specific box
 let offsetX = 0;
 let offsetY = 0;
 let offsetXEmotionsContainer = 0;
 let offsetYEmotionsContainer = 0;
+let offsetXThoughtsPanel = 0;
+let offsetYThoughtsPanel = 0;
 
 // Default state
 let activeObject = null;
@@ -137,11 +139,11 @@ function featureThoughts() {
 }
 function thoughtsRecreateOnDocEmotions() {
   // Start position -> clouds
-  const topSpacingCloud = 20;
-  const rightSpacingCloud = 5;
-  const gapBetweenCloud = 20;
+  const topSpacingCloud = 0;
+  const rightSpacingCloud = 15;
+  const gapBetweenCloud = 25;
 
-  if (screenEmotions) {
+  if (thoughtsPanel) {
     let thoughtsJson = localStorage.getItem("thoughtsAndEmotions");
 
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
@@ -173,6 +175,8 @@ function thoughtsRecreateOnDocEmotions() {
         if (saveButtonOn) {
           saveButtonOn = false;
 
+          thoughtReleaseOrSave.classList.add("consumed");
+
           const saveCloud = cloudInZone
           saveCloud.classList.add("consumed");
           saveCloud.classList.remove("shiny");
@@ -199,6 +203,7 @@ function thoughtsRecreateOnDocEmotions() {
               remainingThoughts[3].style.visibility = "visible";
             }
             resetZone(true);
+            thoughtReleaseOrSave.classList.remove("consumed");
           })
         } else {
           resetZone(false);
@@ -209,14 +214,14 @@ function thoughtsRecreateOnDocEmotions() {
 
     for (let thoughtCounter = 0; thoughtCounter < thoughtsAndEmotions.length; thoughtCounter++) {
 
-      const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, screenEmotions);
+      const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, thoughtsPanel);
       cloud.dataset.thoughtNumber = thoughtCounter
 
       if (thoughtCounter > 3) {
         cloud.style.visibility = "hidden";
       }
 
-     positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
+    positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
 
 
       pressObject("mousedown", cloud);
@@ -389,6 +394,7 @@ function pressObject(on, rawObject) {
     // Every press changes position -> new dimensions needed
     const rectObject = rawObject.getBoundingClientRect();
     const rectEmotionsContainer = emotionsContainer.getBoundingClientRect();
+    const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
 
     const pointX = event.touches ? event.touches[0].clientX : event.clientX;
     const pointY = event.touches ? event.touches[0].clientY : event.clientY;
@@ -398,6 +404,9 @@ function pressObject(on, rawObject) {
 
     offsetXEmotionsContainer = rectEmotionsContainer.left;
     offsetYEmotionsContainer = rectEmotionsContainer.top;
+
+    offsetXThoughtsPanel = rectThoughtsPanel.left;
+    offsetYThoughtsPanel = rectThoughtsPanel.top;
   });
 }
 function moveObject(move) {
@@ -409,11 +418,13 @@ function moveObject(move) {
     const pointY = event.touches ? event.touches[0].clientY : event.clientY;
 
     if (activeObject.classList.contains("emotion-box")) {
-      activeObject.style.left = (pointX - offsetX - offsetXEmotionsContainer) + "px";
-      activeObject.style.top = (pointY - offsetY - offsetYEmotionsContainer) + "px";
+      const rectEmotionsContainer = emotionsContainer.getBoundingClientRect();
+      activeObject.style.left = ((pointX - offsetX - offsetXEmotionsContainer) / rectEmotionsContainer.width) * 100 + "%";
+      activeObject.style.top = ((pointY - offsetY - offsetYEmotionsContainer) / rectEmotionsContainer.height) * 100 + "%";
     } else {
-      activeObject.style.left = (pointX - offsetX) + "px";
-      activeObject.style.top = (pointY - offsetY) + "px";
+      const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
+      activeObject.style.left = ((pointX - offsetX - offsetXThoughtsPanel) / rectThoughtsPanel.width) * 100 + "%";
+      activeObject.style.top = ((pointY - offsetY - offsetYThoughtsPanel) / rectThoughtsPanel.height) * 100 + "%";
     }
 
     // reset style right -> only one "anchor"
@@ -454,20 +465,14 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         const centerX = rectCloudDropZone.left + (rectCloudDropZone.width / 2);
         const centerY = rectCloudDropZone.top + (rectCloudDropZone.height / 2);
 
+        
         // centering
         activeObject.classList.remove("float-cloud")
-        activeObject.style.left = (centerX / window.innerWidth) * 100 + "%";
-        activeObject.style.top =  (centerY / window.innerHeight) * 100 + "%";
+
+        const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
+        activeObject.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
+        activeObject.style.top =  ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
         activeObject.style.transform = "translate(-50%, -50%)";
-
-        // Testing
-        console.log("centerX: "+ centerX);
-        console.log("centerY: "+ centerY);
-        console.log("innerWidth: " + window.innerWidth);
-        console.log("innerHeight: " + window.innerHeight);
-
-        console.log("activeObject.style.left: " + activeObject.style.left);
-        console.log("activeObject.style.top: " + activeObject.style.top);
 
         const emotionBoxes = document.querySelectorAll(".emotion-box");
 

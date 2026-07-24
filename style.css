@@ -369,8 +369,92 @@ body {
   pointer-events: none;
 }
 
+#emotions-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;  
+  align-items: center;
 
-#middle-row {
+  height: 100vh;
+  width: 30vw;  
+}
+
+#adjust-emotions-input-box {
+  width: fit-content;
+  height: 10%;
+  width: 90%;
+}
+
+#emotions-input-box {
+  height: 60%;
+  width: auto;
+  border-radius: 1vw;
+
+  font-size: 200%;
+  color: white;
+
+  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
+
+  box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
+    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
+
+  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
+  text-shadow: #cc49ff 1px 0 10px;
+}
+
+#emotions-input-box:focus {
+  outline: none;
+
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
+}
+
+#emotions-container {
+  width: 90%;
+  height: 60%;
+
+  position: relative;
+  top: 0%;
+  left: 0%;
+  transform: translateY(0%);
+
+  z-index: 1000;
+} 
+
+.emotion-box {
+  top: 5%;
+
+  position: absolute;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: grab;
+
+  border: solid 1px rgba(225, 0, 255, 0.5);
+  min-width: 5vw;
+  height: 5vh;
+  border-radius: 10%;
+
+
+  color: rgb(255, 255, 255);
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
+    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
+  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
+}
+
+.emotion-box:hover {
+  box-shadow:
+    0 0 12px rgba(255, 20, 93, 0.7),
+    0 0 24px rgba(255, 89, 135, 0.5);
+}
+
+#drop-panel {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -407,83 +491,53 @@ body {
   color: rgb(255, 166, 251);
 }
 
+
+#thoughts-panel {
+  width: 30%;
+  height: 70%;
+
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+  transform: translateY(-5%);
+}
+
+.screen-3-emotions .thought-cloud {
+  position: absolute;
+}
+
 #thought-release-or-save {
   visibility: hidden;
 
-  margin-top: 15%;
+  margin-top: 10%;
   border: none;
 
   width: 45%;
   height: 10%;
   border-radius: 1vw;
 
-
   font-size: 3vw;
   overflow: hidden;
 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
   color: rgb(255, 255, 255);
   background:
-    linear-gradient(rgba(245, 4, 253, 0.20), rgba(255, 65, 246, 0.20)) padding-box,
-    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
+    linear-gradient(rgba(245, 4, 253, 0.40), rgba(255, 65, 246, 0.40)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.6), rgba(236, 93, 255, 0.2)) border-box;
 }
 
 #thought-release-or-save:hover {
-  color: rgba(222, 139, 255, 0.85);
-  filter: saturate(1);
-  box-shadow:
-    0 0 2px rgba(174, 0, 255, 0.8),
-    0 0 3px rgba(255, 71, 230, 0.8);
-
-  filter: brightness(1.8);
-
   cursor: pointer;
-}
 
-/* IN PROGRESS 
-#thoughts-collected-container {
+  color: white;
+  box-shadow:
+    0 0 12px rgba(174, 0, 255, 0.7),
+    0 0 24px rgba(255, 71, 230, 0.5);
 
-}
-*/
-
-#emotions-container {
-  width: 30%;
-  height: 60%;
-
-  position: absolute;
-  top: 0%;
-  left: 0;
-  transform: translateY(50%);
-
-  z-index: 1000;
-} 
-
-.emotion-box {
-  top: 5%;
-
-  position: absolute;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: grab;
-
-  border: solid 1px rgba(225, 0, 255, 0.5);
-  min-width: 5vw;
-  height: 5vh;
-  border-radius: 10%;
-
-
-  color: rgb(255, 255, 255);
-  background:
-    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
-    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
-  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
-}
-
-.emotion-box:hover {
   filter: brightness(1.2);
 }
+
 
 .pulse {
   animation: pulse 5s ease-in-out infinite;
@@ -537,45 +591,6 @@ body {
   100% {
     filter: brightness(1);
   }
-}
-
-#emotions-input-box {
-  margin-top: 10%;
-  margin-left: 15%;
-
-  width: 200%;
-  height: 50%;
-  border-radius: 1vw;
-
-  font-size: 200%;
-  color: white;
-
-  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
-
-  box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
-  background:
-    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
-    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
-
-  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
-  text-shadow: #cc49ff 1px 0 10px;
-}
-
-#emotions-input-box:focus {
-  outline: none;
-
-  background:
-    linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
-    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
-}
-
-#adjust-emotions-input-box {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  width: 20%;
-  height: 15%;
 }
 
 
