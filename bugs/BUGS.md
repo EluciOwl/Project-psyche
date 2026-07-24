@@ -285,7 +285,7 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **👀**: First problem, don't forget: animation lived on .emotion-box, no .pulse class existed &rarr; JS toggled a class CSS never matched before
 
 ## 2026-07-11
-### **`JS`** -  Clouds display `[object Object]` instead of thought text
+### **`JS`** - Clouds display `[object Object]` instead of thought text
 
 - **🐛**: After refactoring thoughtsArray from strings to objects, every cloud on emotions.html showed the text `[object Object]`
 
@@ -314,7 +314,7 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 
 
 ## 2026-07-20
-### **`JS`** - cloud font-size shrink aggressive with growing characters
+### **`JS`** - Cloud font-size shrink aggressive with growing characters
 
 - **🐛**: Medium-length thoughts looked way too small even though the cloud had free space
 
@@ -335,3 +335,19 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔧**: `event.animationName !== "consumed"`guard on the save listener. Reflow-restart sandwich for re-triggering `shiny`.
   &rarr; data logic runs at click-time, visual logic in `animationend`
 - **💡**: animation timers and JS execution are separate clocks, bugs live where they overlap.
+
+## 2026-07-24
+### **`CSS/JS`** - Cloud snaps off-center after wrapping clouds in a panel
+
+- **🐛**: Dropped cloud lands in the wrong spot instead of the drop-zone center.
+
+![cloud-snaps-off-center](/bugs/bug-gifs/cloud-snaps-off-center.gif)
+
+- **🔍**: `#thoughts-panel` is `position: absolute`, so it became the cloud's `offsetParent`. The centering code still divides `centerX/centerY` by `window.innerWidth/innerHeight`, producing a viewport-absolute `%` that then gets applied inside the panel. The drag code already measures against the panel, the centering code was never updated to match.
+- **🔧**: Convert the drop-zone center into panel-absolute coords before turning it into `%`:
+```js
+  const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
+  activeObject.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
+  activeObject.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
+```
+- **💡**: `%` on an absolutely positioned element is measured against its `offsetParent`, not the viewport. The moment you wrap positioned children in a positioned container, every `%` coordinate must be measured against that container.
