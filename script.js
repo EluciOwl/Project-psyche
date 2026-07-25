@@ -140,7 +140,7 @@ function featureThoughts() {
 function thoughtsRecreateOnDocEmotions() {
   // Start position -> clouds
   const topSpacingCloud = 0;
-  const rightSpacingCloud = 15;
+  const leftSpacingCloud = 15;
   const gapBetweenCloud = 25;
 
   if (thoughtsPanel) {
@@ -148,12 +148,10 @@ function thoughtsRecreateOnDocEmotions() {
 
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
-
-
     function resetZone(cloudWasSaved) {
       if (!cloudWasSaved) {
         cloudInZone.style.top = cloudInZone.dataset.positionTop;
-        cloudInZone.style.right = cloudInZone.dataset.positionRight;
+        cloudInZone.style.right = cloudInZone.dataset.positionLeft;
         cloudInZone.style.left = "";
 
         cloudInZone.classList.remove("active-cloud");
@@ -197,7 +195,7 @@ function thoughtsRecreateOnDocEmotions() {
             const remainingThoughts = document.querySelectorAll(".thought-cloud")
             for (let thoughtsNumber = 0; thoughtsNumber < remainingThoughts.length; thoughtsNumber++) {
               remainingThoughts[thoughtsNumber].dataset.thoughtNumber = thoughtsNumber;
-              positionObject(thoughtsNumber, remainingThoughts[thoughtsNumber], topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
+              positionObject(thoughtsNumber, remainingThoughts[thoughtsNumber], topSpacingCloud, leftSpacingCloud, gapBetweenCloud);
             }
             if (remainingThoughts.length > 3) {
               remainingThoughts[3].style.visibility = "visible";
@@ -221,7 +219,7 @@ function thoughtsRecreateOnDocEmotions() {
         cloud.style.visibility = "hidden";
       }
 
-    positionObject(thoughtCounter, cloud, topSpacingCloud, rightSpacingCloud, gapBetweenCloud);
+      positionObject(thoughtCounter, cloud, topSpacingCloud, leftSpacingCloud, gapBetweenCloud);
 
 
       pressObject("mousedown", cloud);
@@ -273,39 +271,42 @@ function createFloatingClouds(input, container) {
 function createEmotions() {
 
   // Set start position
-  let rightSpacingEmotion = 75;
+  let leftSpacingEmotion = 0;
   const topSpacingEmotion = 5;
   const gapBetweenEmotion = 15;
 
   if (emotionsContainer) {
-    let positionInRow;
     const emotionsAmount = EMOTIONS.length;
 
+    const PER_COLUMN = 6;
+    const COLUMN_WIDTH = 40;
+    const MAX_EMOTIONS = 18;
+
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
+      if (emotionCounter < MAX_EMOTIONS) {
+        const emotionBox = document.createElement("div");
+        emotionBox.classList.add("emotion-box");
 
-      const emotionBox = document.createElement("div");
-      emotionBox.classList.add("emotion-box");
+        const emotionText = document.createElement("span");
+        emotionText.classList.add("emotion-text");
+        emotionText.textContent = EMOTIONS[emotionCounter];
 
-      const emotionText = document.createElement("span");
-      emotionText.classList.add("emotion-text");
-      emotionText.textContent = EMOTIONS[emotionCounter];
+        emotionBox.appendChild(emotionText);
+        emotionsContainer.appendChild(emotionBox);
 
-      emotionBox.appendChild(emotionText);
-      emotionsContainer.appendChild(emotionBox);
+        emotionBox.classList.add("pulse");
 
-      emotionBox.classList.add("pulse");
+        const column = Math.floor(emotionCounter / PER_COLUMN);
+        const rowInColumn = emotionCounter % PER_COLUMN;
 
-      if (emotionCounter < emotionsAmount / 2) {
-        positionInRow = emotionCounter;
-      } else {
-        rightSpacingEmotion = 50;
-        positionInRow = emotionCounter - (emotionsAmount / 2);
+        const leftSpacingEmotion = column * COLUMN_WIDTH;
+
+
+        positionObject(rowInColumn, emotionBox, topSpacingEmotion, leftSpacingEmotion, gapBetweenEmotion)
+
+        pressObject("mousedown", emotionBox);
+        pressObject("touchstart", emotionBox);
       }
-
-      positionObject(positionInRow, emotionBox, topSpacingEmotion, rightSpacingEmotion, gapBetweenEmotion)
-
-      pressObject("mousedown", emotionBox);
-      pressObject("touchstart", emotionBox);
     }
     moveObject("mousemove");
     moveObject("touchmove");
@@ -349,10 +350,35 @@ function pieChart() {
     new Chart(pieChartElement, pieConfig)
   }
 }
+function addEmotion() {
+  emotionsInput = document.getElementById("emotions-input");
 
+  if (emotionsInput) {
+    emotionsInput.addEventListener("keydown", (event) => {
+
+      const cleanValue = emotionsInput.value.trim();
+
+      const alreadyThere = EMOTIONS.some(
+        (emotion) => emotion.toLowerCase() === cleanValue.toLowerCase()
+      );
+
+      if (event.key === "Enter" && cleanValue !== "" && !alreadyThere) {
+        EMOTIONS.push(cleanValue);
+
+        emotionsInput.value = "";
+
+        const emotionBoxes = document.querySelectorAll(".emotion-box");
+        for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
+          emotionBoxes[emotionNumber].remove();
+        }
+        createEmotions();
+      }
+    })
+  }
+}
 
 // ===== Position Objects ===== //
-function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapBetween) {
+function positionObject(counterObject, rawObject, topSpacing, leftSpacing, gapBetween) {
 
   const gapHeight = gapBetween * counterObject;
 
@@ -360,8 +386,8 @@ function positionObject(counterObject, rawObject, topSpacing, rightSpacing, gapB
   rawObject.dataset.positionTop = topSpacing + gapHeight + "%";
   rawObject.style.top = rawObject.dataset.positionTop;
 
-  rawObject.dataset.positionRight = rightSpacing + "%";
-  rawObject.style.right = rawObject.dataset.positionRight;
+  rawObject.dataset.positionLeft = leftSpacing + "%";
+  rawObject.style.left = rawObject.dataset.positionLeft;
 }
 function emotionRebuild(emotionBoxes, visibility) {
 
@@ -375,8 +401,7 @@ function emotionRebuild(emotionBoxes, visibility) {
     emotionBoxes[emotionNumber].classList.add("pulse");
 
     emotionBoxes[emotionNumber].style.top = emotionBoxes[emotionNumber].dataset.positionTop;
-    emotionBoxes[emotionNumber].style.right = emotionBoxes[emotionNumber].dataset.positionRight;
-    emotionBoxes[emotionNumber].style.left = "";
+    emotionBoxes[emotionNumber].style.left = emotionBoxes[emotionNumber].dataset.positionLeft;
   }
 }
 
@@ -449,7 +474,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
       if (indicatorIsInZone) {
         if (cloudInZone) {
           activeObject.style.top = activeObject.dataset.positionTop;
-          activeObject.style.right = activeObject.dataset.positionRight;
+          activeObject.style.right = activeObject.dataset.positionLeft;
           activeObject.style.left = "";
           return;
         }
@@ -465,13 +490,13 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         const centerX = rectCloudDropZone.left + (rectCloudDropZone.width / 2);
         const centerY = rectCloudDropZone.top + (rectCloudDropZone.height / 2);
 
-        
+
         // centering
         activeObject.classList.remove("float-cloud")
 
         const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
         activeObject.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
-        activeObject.style.top =  ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
+        activeObject.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
         activeObject.style.transform = "translate(-50%, -50%)";
 
         const emotionBoxes = document.querySelectorAll(".emotion-box");
@@ -634,6 +659,7 @@ function init() {
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
   pieChart();
+  addEmotion();
 
   // Visual effects
   appearingInputText();
