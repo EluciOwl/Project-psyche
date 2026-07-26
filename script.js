@@ -151,12 +151,14 @@ function thoughtsRecreateOnDocEmotions() {
     function resetZone(cloudWasSaved) {
       if (!cloudWasSaved) {
         cloudInZone.style.top = cloudInZone.dataset.positionTop;
-        cloudInZone.style.right = cloudInZone.dataset.positionLeft;
-        cloudInZone.style.left = "";
+        cloudInZone.style.left = cloudInZone.dataset.positionLeft;
 
         cloudInZone.classList.remove("active-cloud");
         cloudInZone.classList.remove("shiny")
         cloudInZone.classList.add("float-cloud");
+
+        const thoughtText = cloudInZone.querySelector(".cloud-text");
+        thoughtText.style.fontSize = thoughtText.dataset.fontSize + "vw";
       }
 
       cloudInZone.style.transform = "";
@@ -244,24 +246,25 @@ function createFloatingClouds(input, container) {
   imgCloud.src = "assets/images/ai-generated/thought.png";
 
   // Text create
-  const thoughtTextCloud = document.createElement("span");
-  thoughtTextCloud.classList.add("thought-text-cloud");
+  const cloudText = document.createElement("span");
+  cloudText.classList.add("cloud-text");
   // .value is the String I gave -> .textContent is showing the text
-  thoughtTextCloud.textContent = input;
+  cloudText.textContent = input;
 
 
   let inputLength = input.replace(/ +/g, " ").length;
 
   const startSize = 2.75;
-  const shrinkFactor = 0.15;
+  const shrinkFactor = 0.165;
   let cloudFontSize = Math.max(1, startSize - (Math.sqrt(inputLength) * shrinkFactor));
 
 
-  thoughtTextCloud.style.fontSize = cloudFontSize + "vw";
+  cloudText.style.fontSize = cloudFontSize + "vw";
+  cloudText.dataset.fontSize = cloudFontSize;
 
   // put created img, text into Container
   divClouds.appendChild(imgCloud);
-  divClouds.appendChild(thoughtTextCloud);
+  divClouds.appendChild(cloudText);
   container.appendChild(divClouds);
 
   divClouds.classList.add("float-cloud");
@@ -360,7 +363,7 @@ function addEmotion() {
 
       const alreadyThere = EMOTIONS.some(
         (emotion) => emotion.toLowerCase() === cleanValue.toLowerCase()
-      );
+      )
 
       if (event.key === "Enter" && cleanValue !== "" && !alreadyThere) {
         EMOTIONS.push(cleanValue);
@@ -451,9 +454,6 @@ function moveObject(move) {
       activeObject.style.left = ((pointX - offsetX - offsetXThoughtsPanel) / rectThoughtsPanel.width) * 100 + "%";
       activeObject.style.top = ((pointY - offsetY - offsetYThoughtsPanel) / rectThoughtsPanel.height) * 100 + "%";
     }
-
-    // reset style right -> only one "anchor"
-    activeObject.style.right = "";
   })
 }
 function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
@@ -474,8 +474,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
       if (indicatorIsInZone) {
         if (cloudInZone) {
           activeObject.style.top = activeObject.dataset.positionTop;
-          activeObject.style.right = activeObject.dataset.positionLeft;
-          activeObject.style.left = "";
+          activeObject.style.left = activeObject.dataset.positionLeft;
           return;
         }
         if (releaseButton) {
@@ -484,7 +483,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         dropZone.style.visibility = "hidden";
 
         cloudInZone = activeObject
-        activeObject.classList.add(activeClass);
+        cloudInZone.classList.add(activeClass);
 
         const rectCloudDropZone = cloudDropZone.getBoundingClientRect();
         const centerX = rectCloudDropZone.left + (rectCloudDropZone.width / 2);
@@ -492,12 +491,15 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
 
 
         // centering
-        activeObject.classList.remove("float-cloud")
+        cloudInZone.classList.remove("float-cloud")
 
         const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
-        activeObject.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
-        activeObject.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
-        activeObject.style.transform = "translate(-50%, -50%)";
+        cloudInZone.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
+        cloudInZone.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
+        cloudInZone.style.transform = "translate(-50%, -50%)";
+
+        const thoughtText = cloudInZone.querySelector(".cloud-text");
+        thoughtText.style.fontSize = (thoughtText.dataset.fontSize * 1.5) + "vw";
 
         const emotionBoxes = document.querySelectorAll(".emotion-box");
 
