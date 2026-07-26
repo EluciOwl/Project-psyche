@@ -158,14 +158,12 @@ body {
   width: 20vh;
 
   border-radius: 10%;
-  padding: 1%;
+  padding: 0.75%;
 
   background:
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 
-  position: relative;
-  overflow: hidden;
   color: rgba(204, 73, 255, 0.5);
 }
 
@@ -225,10 +223,17 @@ body {
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 }
 
-#ready-button {
-  width: 20vh;
-  font-size: 6vh;
+#add-thought-button {
+  align-self: center;
+  width: 10vw;
+  height: 15vh;
+  font-size: 12vh;
+
   color: rgba(222, 139, 255, 0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   border: none;
   border-radius: 1vw;
@@ -238,10 +243,9 @@ body {
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 
   padding: 20% 2.5%;
-  visibility: hidden;
 }
 
-#ready-button:hover {
+#add-thought-button:hover {
   color: rgba(222, 139, 255, 0.425);
   filter: saturate(1);
   box-shadow:
@@ -254,12 +258,17 @@ body {
   cursor: pointer;
 }
 
-#ready-button:active {
+#add-thought-button:active {
   transform: scale(0.95);
+}
+
+#add-thought-button:focus {
+  outline: none;
 }
 
 #sparkle-effect {
   position: relative;
+
 }
 
 /* Creating little balls*/
@@ -288,6 +297,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+
   margin-top: 5vh;
   gap: 15% 2.5%;
 }

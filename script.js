@@ -19,7 +19,7 @@ const thoughtInput = document.getElementById("thought-input-box");
 
 const MAX_THOUGHTS = 8;
 
-const readyButton = document.getElementById("ready-button");
+const addThoughtButton = document.getElementById("add-thought-button");
 
 
 // Amount of useable emotions
@@ -78,14 +78,6 @@ function menuNavigation() {
   }
 }
 
-function readyToEmotionsNavigation() {
-  // Take Clouds onto next screen 
-  if (readyButton) {
-    readyButton.addEventListener("click", () => {
-      window.location.href = "emotions.html";
-    })
-  }
-}
 
 // ===== Page feature ===== //
 function featureThoughts() {
@@ -96,33 +88,23 @@ function featureThoughts() {
 
 
   if (thoughtInput) {
-
     let savedThoughtsJson = localStorage.getItem("thoughtsAndEmotions")
     thoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
     let inputCounter = thoughtsAndEmotions.length
     thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
 
-    function readyAndSparkle() {
-      if (inputCounter > 0 && sparkleEffectSwitch) {
+    function addThoughtsparkle() {
+      if (sparkleEffectSwitch) {
         const sparkleVisual = document.getElementById("sparkle-effect");
-        readyButton.style.visibility = "visible";
         sparkleEffect(sparkleVisual);
         sparkleEffectSwitch = false;
       }
     }
 
-    readyAndSparkle();
-    counterAppearing(thoughtCounter, inputCounter);
-
-    for (let cloudNumber = 0; cloudNumber < inputCounter; cloudNumber++) {
-      createFloatingClouds(thoughtsAndEmotions[cloudNumber].thought, thoughtsContainer);
-    }
-    // Press Enter -> thought counter + 1, create cloud
-    thoughtInput.addEventListener("keydown", (event) => {
+    function addThought() {
       const cleanValue = thoughtInput.value.trim();
-      if (event.key === "Enter" && cleanValue !== "" && inputCounter < MAX_THOUGHTS) {
-
+      if (cleanValue === "" || inputCounter >= MAX_THOUGHTS) return;
         inputCounter++;
         counterAppearing(thoughtCounter, inputCounter);
         createFloatingClouds(cleanValue, thoughtsContainer);
@@ -132,9 +114,22 @@ function featureThoughts() {
 
         // clearing the text-field
         thoughtInput.value = "";
-      }
-      readyAndSparkle();
+      addThoughtsparkle();
+    }
+
+    addThoughtsparkle();
+    counterAppearing(thoughtCounter, inputCounter);
+
+    for (let cloudNumber = 0; cloudNumber < inputCounter; cloudNumber++) {
+      createFloatingClouds(thoughtsAndEmotions[cloudNumber].thought, thoughtsContainer);
+    }
+    // Press Enter -> thought counter + 1, create cloud
+    thoughtInput.addEventListener("keydown", (event) => {
+      if(event.key === "Enter") addThought();
     });
+
+    addThoughtButton.addEventListener("click", addThought);
+    addThoughtButton.addEventListener("touchstart", addEmotion);
   }
 }
 function thoughtsRecreateOnDocEmotions() {
@@ -655,7 +650,6 @@ function consumeEmotion() {
 function init() {
   // Navigation
   menuNavigation();
-  readyToEmotionsNavigation();
 
   // Page feature
   featureThoughts();
