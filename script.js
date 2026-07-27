@@ -15,6 +15,8 @@ let thoughtsAndEmotions = [];
 let savedThoughtsAndEmotions = [];
 const consumedEmotionArray = [];
 
+const addEmotionsArray = [];
+
 const thoughtInput = document.getElementById("thought-input-box");
 
 const MAX_THOUGHTS = 8;
@@ -23,7 +25,10 @@ const addThoughtButton = document.getElementById("add-thought-button");
 
 
 // Amount of useable emotions
-const EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad", "Excited", "Guilty"]
+const MAX_EMOTIONS = 18;
+const DEFAULT_EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad", "Excited", "Guilty"]
+let totalEmotions = [];
+
 
 // position on specific box
 let offsetX = 0;
@@ -105,15 +110,15 @@ function featureThoughts() {
     function addThought() {
       const cleanValue = thoughtInput.value.trim();
       if (cleanValue === "" || inputCounter >= MAX_THOUGHTS) return;
-        inputCounter++;
-        counterAppearing(thoughtCounter, inputCounter);
-        createFloatingClouds(cleanValue, thoughtsContainer);
+      inputCounter++;
+      counterAppearing(thoughtCounter, inputCounter);
+      createFloatingClouds(cleanValue, thoughtsContainer);
 
-        thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
-        localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
+      thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
+      localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
-        // clearing the text-field
-        thoughtInput.value = "";
+      // clearing the text-field
+      thoughtInput.value = "";
       addThoughtsparkle();
     }
 
@@ -125,7 +130,7 @@ function featureThoughts() {
     }
     // Press Enter -> thought counter + 1, create cloud
     thoughtInput.addEventListener("keydown", (event) => {
-      if(event.key === "Enter") addThought();
+      if (event.key === "Enter") addThought();
     });
 
     addThoughtButton.addEventListener("click", addThought);
@@ -140,7 +145,6 @@ function thoughtsRecreateOnDocEmotions() {
 
   if (thoughtsPanel) {
     let thoughtsJson = localStorage.getItem("thoughtsAndEmotions");
-
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
     function resetZone(cloudWasSaved) {
@@ -203,7 +207,7 @@ function thoughtsRecreateOnDocEmotions() {
         } else {
           resetZone(false);
         }
-        emotionRebuild(emotionBoxes, "hidden");
+        emotionRebuild(emotionBoxes, "visible");
       })
     }
 
@@ -274,11 +278,12 @@ function createEmotions() {
   const gapBetweenEmotion = 15;
 
   if (emotionsContainer) {
-    const emotionsAmount = EMOTIONS.length;
+    let addEmotionsJson = localStorage.getItem("addEmotions");
+    const addEmotionsArray = JSON.parse(addEmotionsJson) || [];
 
-    const PER_COLUMN = 6;
-    const COLUMN_WIDTH = 40;
-    const MAX_EMOTIONS = 18;
+    totalEmotions.push(...DEFAULT_EMOTIONS, ...addEmotionsArray);
+
+    const emotionsAmount = totalEmotions.length;
 
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
       if (emotionCounter < MAX_EMOTIONS) {
@@ -287,12 +292,16 @@ function createEmotions() {
 
         const emotionText = document.createElement("span");
         emotionText.classList.add("emotion-text");
-        emotionText.textContent = EMOTIONS[emotionCounter];
+        emotionText.textContent = totalEmotions[emotionCounter];
 
         emotionBox.appendChild(emotionText);
         emotionsContainer.appendChild(emotionBox);
 
         emotionBox.classList.add("pulse");
+
+        
+        const PER_COLUMN = 6;
+        const COLUMN_WIDTH = 40;
 
         const column = Math.floor(emotionCounter / PER_COLUMN);
         const rowInColumn = emotionCounter % PER_COLUMN;
@@ -352,16 +361,22 @@ function addEmotion() {
   emotionsInput = document.getElementById("emotions-input");
 
   if (emotionsInput) {
+
+    let addEmotionsJson = localStorage.getItem("addEmotions");
+    const addEmotionsArray = JSON.parse(addEmotionsJson) || [];
+
     emotionsInput.addEventListener("keydown", (event) => {
 
       const cleanValue = emotionsInput.value.trim();
 
-      const alreadyThere = EMOTIONS.some(
+      const alreadyThere = totalEmotions.some(
         (emotion) => emotion.toLowerCase() === cleanValue.toLowerCase()
       )
 
-      if (event.key === "Enter" && cleanValue !== "" && !alreadyThere) {
-        EMOTIONS.push(cleanValue);
+      if (event.key === "Enter" && totalEmotions.length < MAX_EMOTIONS && cleanValue !== "" && !alreadyThere) {
+
+        addEmotionsArray.push(cleanValue);
+        localStorage.setItem("addEmotions", JSON.stringify(addEmotionsArray));
 
         emotionsInput.value = "";
 
@@ -369,6 +384,7 @@ function addEmotion() {
         for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
           emotionBoxes[emotionNumber].remove();
         }
+        totalEmotions = [];
         createEmotions();
       }
     })
@@ -654,8 +670,9 @@ function init() {
   // Page feature
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
-  pieChart();
+  createEmotions();
   addEmotion();
+  pieChart();
 
   // Visual effects
   appearingInputText();
