@@ -402,7 +402,7 @@ body {
   gap: 1vw 2.25vw;
 }
 
-#add-emotion {
+#add-emotion-button {
   width: 20%;
   height: 100%;
 
@@ -429,13 +429,13 @@ body {
   text-shadow: #cc49ff 1px 0 10px;
 }
 
-#add-emotion:hover {
+#add-emotion-button:hover {
   box-shadow:
     0 0 6px rgba(255, 20, 93, 0.7),
     0 0 12px rgba(255, 89, 135, 0.5); 
 }
 
-#add-emotion:active {
+#add-emotion-button:active {
   transform: scale(0.85);
 }
 

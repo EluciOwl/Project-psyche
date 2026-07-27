@@ -299,7 +299,7 @@ function createEmotions() {
 
         emotionBox.classList.add("pulse");
 
-        
+
         const PER_COLUMN = 6;
         const COLUMN_WIDTH = 40;
 
@@ -359,21 +359,20 @@ function pieChart() {
 }
 function addEmotion() {
   emotionsInput = document.getElementById("emotions-input");
+  addEmotionButton = document.getElementById("add-emotion-button");
 
   if (emotionsInput) {
-
     let addEmotionsJson = localStorage.getItem("addEmotions");
     const addEmotionsArray = JSON.parse(addEmotionsJson) || [];
 
-    emotionsInput.addEventListener("keydown", (event) => {
-
+    function triggerAddEmotions() {
       const cleanValue = emotionsInput.value.trim();
 
       const alreadyThere = totalEmotions.some(
         (emotion) => emotion.toLowerCase() === cleanValue.toLowerCase()
       )
 
-      if (event.key === "Enter" && totalEmotions.length < MAX_EMOTIONS && cleanValue !== "" && !alreadyThere) {
+      if (totalEmotions.length < MAX_EMOTIONS && cleanValue !== "" && !alreadyThere) {
 
         addEmotionsArray.push(cleanValue);
         localStorage.setItem("addEmotions", JSON.stringify(addEmotionsArray));
@@ -387,7 +386,14 @@ function addEmotion() {
         totalEmotions = [];
         createEmotions();
       }
+    }
+
+    emotionsInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") triggerAddEmotions();
     })
+
+    addEmotionButton.addEventListener("click", triggerAddEmotions);
+    addEmotionButton.addEventListener("touchstart", triggerAddEmotions);
   }
 }
 
