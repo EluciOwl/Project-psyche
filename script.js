@@ -15,7 +15,6 @@ let thoughtsAndEmotions = [];
 let savedThoughtsAndEmotions = [];
 const consumedEmotionArray = [];
 
-const addEmotionsArray = [];
 
 const thoughtInput = document.getElementById("thought-input-box");
 
@@ -134,7 +133,7 @@ function featureThoughts() {
     });
 
     addThoughtButton.addEventListener("click", addThought);
-    addThoughtButton.addEventListener("touchstart", addEmotion);
+    addThoughtButton.addEventListener("touchstart", addThought);
   }
 }
 function thoughtsRecreateOnDocEmotions() {
@@ -277,16 +276,22 @@ function createEmotions() {
   const topSpacingEmotion = 5;
   const gapBetweenEmotion = 15;
 
+  const savedEmotions = localStorage.getItem("addEmotions")
+
+  if (savedEmotions === null) {
+    totalEmotions = [...DEFAULT_EMOTIONS]
+    localStorage.setItem("addEmotions", JSON.stringify(totalEmotions));
+  } else {
+    totalEmotions = JSON.parse(savedEmotions);
+  }
+
   if (emotionsContainer) {
-    let addEmotionsJson = localStorage.getItem("addEmotions");
-    const addEmotionsArray = JSON.parse(addEmotionsJson) || [];
-
-    totalEmotions.push(...DEFAULT_EMOTIONS, ...addEmotionsArray);
-
     const emotionsAmount = totalEmotions.length;
 
     for (let emotionCounter = 0; emotionCounter < emotionsAmount; emotionCounter++) {
       if (emotionCounter < MAX_EMOTIONS) {
+
+
         const emotionBox = document.createElement("div");
         emotionBox.classList.add("emotion-box");
 
@@ -294,7 +299,21 @@ function createEmotions() {
         emotionText.classList.add("emotion-text");
         emotionText.textContent = totalEmotions[emotionCounter];
 
+        const emotionRemove = document.createElement("button");
+        emotionRemove.classList.add("emotion-remove");
+        emotionRemove.textContent = "X";
+        
+        emotionRemove.addEventListener("click", () => {
+          emotionBox.remove();
+          
+          const emotionPosition = totalEmotions.indexOf(emotionText.textContent);
+          totalEmotions.splice(emotionPosition, 1);
+          localStorage.setItem("addEmotions", JSON.stringify(totalEmotions));
+        })
+
+
         emotionBox.appendChild(emotionText);
+        emotionBox.appendChild(emotionRemove);
         emotionsContainer.appendChild(emotionBox);
 
         emotionBox.classList.add("pulse");
@@ -358,13 +377,10 @@ function pieChart() {
   }
 }
 function addEmotion() {
-  emotionsInput = document.getElementById("emotions-input");
-  addEmotionButton = document.getElementById("add-emotion-button");
+  const emotionsInput = document.getElementById("emotions-input");
+  const addEmotionButton = document.getElementById("add-emotion-button");
 
   if (emotionsInput) {
-    let addEmotionsJson = localStorage.getItem("addEmotions");
-    const addEmotionsArray = JSON.parse(addEmotionsJson) || [];
-
     function triggerAddEmotions() {
       const cleanValue = emotionsInput.value.trim();
 
@@ -374,8 +390,8 @@ function addEmotion() {
 
       if (totalEmotions.length < MAX_EMOTIONS && cleanValue !== "" && !alreadyThere) {
 
-        addEmotionsArray.push(cleanValue);
-        localStorage.setItem("addEmotions", JSON.stringify(addEmotionsArray));
+        totalEmotions.push(cleanValue);
+        localStorage.setItem("addEmotions", JSON.stringify(totalEmotions));
 
         emotionsInput.value = "";
 
@@ -383,7 +399,6 @@ function addEmotion() {
         for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
           emotionBoxes[emotionNumber].remove();
         }
-        totalEmotions = [];
         createEmotions();
       }
     }
@@ -394,6 +409,10 @@ function addEmotion() {
 
     addEmotionButton.addEventListener("click", triggerAddEmotions);
     addEmotionButton.addEventListener("touchstart", triggerAddEmotions);
+
+    const emotionBoxes = document.querySelectorAll(".emotion-box");
+    const emotionRemove = document.querySelectorAll(".emotion-remove");
+
   }
 }
 
@@ -484,7 +503,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
     isDragging = false;
     activeObject.style.cursor = "grab";
 
-    // guard because emotions without zone! --> fixing that later hihi
+    // guard because emotions without zone!
     if (!dropZone) return;
 
     function invadeZoneCloud(indicatorIsInZone) {

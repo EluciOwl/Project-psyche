@@ -1,4 +1,5 @@
 /* ========================= ROOT / HTML ========================= */
+
 html,
 body {
   height: 100%;
@@ -390,16 +391,46 @@ body {
 
   height: 100vh;
   width: 30vw;  
+  font-size: 3vw;
 }
 
 #move-emotion-panel {
   display: flex;
   justify-content: flex-start;  
   align-items: flex-start;
+  
   width: 80%;
   height: 7.5%;
 
-  gap: 1vw 2.25vw;
+  gap: 10%;
+}
+
+#emotions-input {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  border-radius: 0.5vw;
+
+  font-size: 80%;
+  color: white;
+
+  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
+
+  box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
+    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
+
+  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
+  text-shadow: #cc49ff 1px 0 10px;
+}
+
+#emotions-input:focus {
+  outline: none;
+
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 }
 
 #add-emotion-button {
@@ -410,13 +441,11 @@ body {
   justify-content: center;
   align-items: center;
 
-  font-size: 80%;
+  font-size: 120%;
 
   color: rgba(255, 255, 255, 0.8);
 
   cursor: pointer;
-
-
 
   border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
 
@@ -437,33 +466,6 @@ body {
 
 #add-emotion-button:active {
   transform: scale(0.85);
-}
-
-#emotions-input {
-  height: 60%;
-  width:65%;
-  border-radius: 0.5vw;
-
-  font-size: 180%;
-  color: white;
-
-  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
-
-  box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
-  background:
-    linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.15)) padding-box,
-    linear-gradient(45deg, rgba(255, 100, 247, 0.2), hwb(290 11% 0% / 0.4), rgba(236, 93, 255, 0.2)) border-box;
-
-  filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
-  text-shadow: #cc49ff 1px 0 10px;
-}
-
-#emotions-input:focus {
-  outline: none;
-
-  background:
-    linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
-    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 }
 
 #emotions-container {
@@ -504,6 +506,54 @@ body {
   box-shadow:
     0 0 12px rgba(255, 20, 93, 0.7),
     0 0 24px rgba(255, 89, 135, 0.5);
+}
+
+
+.emotion-text {
+  font-size: 1.1vw;
+}
+
+.emotion-remove{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20%;
+
+
+  visibility: hidden;
+
+  box-sizing: border-box;
+  padding: 0;
+  border: 2px;
+
+  position: absolute;
+  top: 0%;
+  left: 80%;
+
+  width: 20%;
+  height: 25%;
+
+
+  color: rgba(253, 253, 253, 0.65);
+
+  background-color: rgba(255, 0, 234, 0.4);
+
+}
+
+.emotion-box:hover .emotion-remove {
+  filter: hue-rotate(-50deg);
+  
+  cursor: pointer;
+  visibility: visible;
+}
+
+.emotion-remove:hover {
+  color: rgba(253, 253, 253, 1);
+  background-color: rgba(255, 0, 234, 0.8);
+}
+
+.emotion-remove:active {
+  transform: scale(0.85);  
 }
 
 #drop-panel {
@@ -605,10 +655,6 @@ body {
   100% {
     transform: scale(1);
   }
-}
-
-.emotion-text {
-  font-size: 1.1vw;
 }
 
 @keyframes consumed {
