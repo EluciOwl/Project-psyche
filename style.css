@@ -306,7 +306,7 @@ body {
 
 .thought-cloud {
   position: relative;
-  display: inline-block;
+  container-type: inline-size;
   width: 20vw;
 }
 
@@ -339,8 +339,8 @@ body {
 .cloud-text {
   text-align: left;
   word-break: break-word;
-  width: 15vw;
-
+  width: 80%;
+  font-size: 14cqw;
   /* position set -> top, bottom, left, right does work now!*/
   /* absolute -> Elemnt taken out of normal flow */
   position: absolute;

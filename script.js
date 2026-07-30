@@ -154,9 +154,6 @@ function thoughtsRecreateOnDocEmotions() {
         cloudInZone.classList.remove("active-cloud");
         cloudInZone.classList.remove("shiny")
         cloudInZone.classList.add("float-cloud");
-
-        const thoughtText = cloudInZone.querySelector(".cloud-text");
-        thoughtText.style.fontSize = thoughtText.dataset.fontSize + "vw";
       }
 
       cloudInZone.style.transform = "";
@@ -252,13 +249,12 @@ function createFloatingClouds(input, container) {
 
   let inputLength = input.replace(/ +/g, " ").length;
 
-  const startSize = 2.75;
-  const shrinkFactor = 0.165;
-  let cloudFontSize = Math.max(1, startSize - (Math.sqrt(inputLength) * shrinkFactor));
+  // cloud font size scales based on input length
+  const startSize = 14;
+  const shrinkFactor = 0.865;
+  let cloudFontSize = Math.max(5, startSize - (Math.sqrt(inputLength) * shrinkFactor));
 
-
-  cloudText.style.fontSize = cloudFontSize + "vw";
-  cloudText.dataset.fontSize = cloudFontSize;
+  cloudText.style.fontSize = cloudFontSize + "cqw";
 
   // put created img, text into Container
   divClouds.appendChild(imgCloud);
@@ -305,7 +301,6 @@ function createEmotions() {
         
         emotionRemove.addEventListener("click", () => {
           emotionBox.remove();
-          
           const emotionPosition = totalEmotions.indexOf(emotionText.textContent);
           totalEmotions.splice(emotionPosition, 1);
           localStorage.setItem("addEmotions", JSON.stringify(totalEmotions));
@@ -376,7 +371,7 @@ function pieChart() {
     new Chart(pieChartElement, pieConfig)
   }
 }
-function addEmotion() {
+function updateEmotion() {
   const emotionsInput = document.getElementById("emotions-input");
   const addEmotionButton = document.getElementById("add-emotion-button");
 
@@ -503,7 +498,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
     isDragging = false;
     activeObject.style.cursor = "grab";
 
-    // guard because emotions without zone!
+    // guard because emotions without zone! --> fixing that later hihi
     if (!dropZone) return;
 
     function invadeZoneCloud(indicatorIsInZone) {
@@ -533,9 +528,6 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         cloudInZone.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
         cloudInZone.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
         cloudInZone.style.transform = "translate(-50%, -50%)";
-
-        const thoughtText = cloudInZone.querySelector(".cloud-text");
-        thoughtText.style.fontSize = (thoughtText.dataset.fontSize * 1.5) + "vw";
 
         const emotionBoxes = document.querySelectorAll(".emotion-box");
 
@@ -696,7 +688,7 @@ function init() {
   featureThoughts();
   thoughtsRecreateOnDocEmotions();
   createEmotions();
-  addEmotion();
+  updateEmotion();
   pieChart();
 
   // Visual effects
