@@ -358,9 +358,15 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🐛**: Pie chart showed saved emotions with attached letter "X".
 
 ![emotion name with X pie chart](/bugs/bug-images/emotion-name-with-X-pie-chart.png)
-
 - **🔍**: `consumeEmotion()` read `.textContent` from the whole `.emotion-box`. After adding the remove button, the box held `<span>Happy</span>` + `<button>X</button>`, and `textContent` concatenates ALL descendants.
-
 - **🔧**: `eatEmotion.querySelector(".emotion-text").textContent` + cleared old localStorage.
-
 - **💡**: Adding a child element can silently break unrelated code that reads the parent. Always drill down to the exact element, never trust `textContent` on a container.
+
+---
+
+### **`JS`** - indexOf on an array of objects always returns -1
+
+- **🐛**: Deleting a thought cloud removed the wrong entry. Screen and counter looked correct, but after a reload the wrong thought was gone.
+- **🔍**: `thoughtsAndEmotions` holds objects `{thought, emotions}`, but searched with `indexOf(cloudText.textContent)`, a string. No match, so it returned `-1` (convention) and `splice(-1, 1)` deleted the last entry. Deleting the last cloud worked by accident, which hid the bug.
+- **🔧**: Switched to `findIndex((entry) => entry.thought === cloudText.textContent)` and added a `!== -1` guard before splicing.
+- **💡**: `indexOf` compares by identity, so it only works for primitives. For objects use `findIndex` with a rule. And `splice` with a negative index counts from the end instead of failing, so a bad index deletes silently.

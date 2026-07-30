@@ -20,6 +20,11 @@ const thoughtInput = document.getElementById("thought-input-box");
 
 const MAX_THOUGHTS = 8;
 
+  // Start position -> clouds
+const CLOUD_TOP_SPACING = 0;
+const CLOUD_LEFT_SPACING = 15;
+const CLOUD_GAP = 25;
+
 const addThoughtButton = document.getElementById("add-thought-button");
 
 
@@ -95,8 +100,7 @@ function featureThoughts() {
     let savedThoughtsJson = localStorage.getItem("thoughtsAndEmotions")
     thoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
-    let inputCounter = thoughtsAndEmotions.length
-    thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
+    updateThoughtCounter();
 
     function addThoughtsparkle() {
       if (sparkleEffectSwitch) {
@@ -108,23 +112,22 @@ function featureThoughts() {
 
     function addThought() {
       const cleanValue = thoughtInput.value.trim();
-      if (cleanValue === "" || inputCounter >= MAX_THOUGHTS) return;
-      inputCounter++;
-      counterAppearing(thoughtCounter, inputCounter);
+      if (cleanValue === "" || thoughtsAndEmotions.length >= MAX_THOUGHTS) return;
+
       createFloatingClouds(cleanValue, thoughtsContainer);
 
       thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
       localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
+      updateThoughtCounter();
+
       // clearing the text-field
       thoughtInput.value = "";
-      addThoughtsparkle();
     }
 
     addThoughtsparkle();
-    counterAppearing(thoughtCounter, inputCounter);
 
-    for (let cloudNumber = 0; cloudNumber < inputCounter; cloudNumber++) {
+    for (let cloudNumber = 0; cloudNumber < thoughtsAndEmotions.length; cloudNumber++) {
       createFloatingClouds(thoughtsAndEmotions[cloudNumber].thought, thoughtsContainer);
     }
     // Press Enter -> thought counter + 1, create cloud
@@ -137,11 +140,6 @@ function featureThoughts() {
   }
 }
 function thoughtsRecreateOnDocEmotions() {
-  // Start position -> clouds
-  const topSpacingCloud = 0;
-  const leftSpacingCloud = 15;
-  const gapBetweenCloud = 25;
-
   if (thoughtsPanel) {
     let thoughtsJson = localStorage.getItem("thoughtsAndEmotions");
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
@@ -189,14 +187,7 @@ function thoughtsRecreateOnDocEmotions() {
             if (event.animationName !== "consumed") return;
             saveCloud.remove();
 
-            const remainingThoughts = document.querySelectorAll(".thought-cloud")
-            for (let thoughtsNumber = 0; thoughtsNumber < remainingThoughts.length; thoughtsNumber++) {
-              remainingThoughts[thoughtsNumber].dataset.thoughtNumber = thoughtsNumber;
-              positionObject(thoughtsNumber, remainingThoughts[thoughtsNumber], topSpacingCloud, leftSpacingCloud, gapBetweenCloud);
-            }
-            if (remainingThoughts.length > 3) {
-              remainingThoughts[3].style.visibility = "visible";
-            }
+            rebuildCloudPosition();
             resetZone(true);
             thoughtReleaseOrSave.classList.remove("consumed");
           })
@@ -216,7 +207,7 @@ function thoughtsRecreateOnDocEmotions() {
         cloud.style.visibility = "hidden";
       }
 
-      positionObject(thoughtCounter, cloud, topSpacingCloud, leftSpacingCloud, gapBetweenCloud);
+      positionObject(thoughtCounter, cloud, CLOUD_TOP_SPACING, CLOUD_LEFT_SPACING, CLOUD_GAP);
 
 
       pressObject("mousedown", cloud);
@@ -232,20 +223,36 @@ function thoughtsRecreateOnDocEmotions() {
 
 // ===== Creation ===== //
 function createFloatingClouds(input, container) {
-  // Container for all Clouds
-  const divClouds = document.createElement("div");
-  divClouds.classList.add("thought-cloud");
 
-  // Cloud image create
-  const imgCloud = document.createElement("img");
-  imgCloud.src = "assets/images/ai-generated/thought.png";
+  const cloud = document.createElement("div");
+  cloud.classList.add("thought-cloud");
 
-  // Text create
+  const cloudImg = document.createElement("img");
+  cloudImg.src = "assets/images/ai-generated/thought.png";
+
   const cloudText = document.createElement("span");
   cloudText.classList.add("cloud-text");
-  // .value is the String I gave -> .textContent is showing the text
+
   cloudText.textContent = input;
 
+  const cloudRemoveButton = document.createElement("button");
+  cloudRemoveButton.classList.add("cloud-remove-button");
+  cloudRemoveButton.textContent = "X";
+
+
+
+  cloudRemoveButton.addEventListener("click", () => {
+    cloud.remove();
+    const cloudPosition = thoughtsAndEmotions.findIndex(
+      (entry) => entry.thought === cloudText.textContent
+    );
+
+    if (cloudPosition !== -1) thoughtsAndEmotions.splice(cloudPosition, 1);
+    localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
+
+    updateThoughtCounter();
+    rebuildCloudPosition();
+  })
 
   let inputLength = input.replace(/ +/g, " ").length;
 
@@ -256,21 +263,21 @@ function createFloatingClouds(input, container) {
 
   cloudText.style.fontSize = cloudFontSize + "cqw";
 
-  // put created img, text into Container
-  divClouds.appendChild(imgCloud);
-  divClouds.appendChild(cloudText);
-  container.appendChild(divClouds);
+  cloud.appendChild(cloudImg);
+  cloud.appendChild(cloudText);
+  cloud.appendChild(cloudRemoveButton);
+  container.appendChild(cloud);
 
-  divClouds.classList.add("float-cloud");
+  cloud.classList.add("float-cloud");
   // give that value for the drag and drop catch later!
-  return divClouds;
+  return cloud;
 }
 function createEmotions() {
 
   // Set start position
-  let leftSpacingEmotion = 0;
-  const topSpacingEmotion = 5;
-  const gapBetweenEmotion = 15;
+  let EMOTION_LEFT_SPACING = 0;
+  const EMOTION_TOP_SPACING = 5;
+  const EMOTION_GAP = 15;
 
   const savedEmotions = localStorage.getItem("addEmotions")
 
@@ -298,7 +305,7 @@ function createEmotions() {
         const emotionRemove = document.createElement("button");
         emotionRemove.classList.add("emotion-remove");
         emotionRemove.textContent = "X";
-        
+
         emotionRemove.addEventListener("click", () => {
           emotionBox.remove();
           const emotionPosition = totalEmotions.indexOf(emotionText.textContent);
@@ -320,10 +327,10 @@ function createEmotions() {
         const column = Math.floor(emotionCounter / PER_COLUMN);
         const rowInColumn = emotionCounter % PER_COLUMN;
 
-        const leftSpacingEmotion = column * COLUMN_WIDTH;
+        const EMOTION_LEFT_SPACING = column * COLUMN_WIDTH;
 
 
-        positionObject(rowInColumn, emotionBox, topSpacingEmotion, leftSpacingEmotion, gapBetweenEmotion)
+        positionObject(rowInColumn, emotionBox, EMOTION_TOP_SPACING, EMOTION_LEFT_SPACING, EMOTION_GAP)
 
         pressObject("mousedown", emotionBox);
         pressObject("touchstart", emotionBox);
@@ -422,6 +429,16 @@ function positionObject(counterObject, rawObject, topSpacing, leftSpacing, gapBe
 
   rawObject.dataset.positionLeft = leftSpacing + "%";
   rawObject.style.left = rawObject.dataset.positionLeft;
+}
+function rebuildCloudPosition() {
+  if (!thoughtsPanel) return;
+
+  const clouds = thoughtsPanel.querySelectorAll(".thought-cloud");
+  for (let cloudNumber = 0; cloudNumber < clouds.length; cloudNumber++) {
+    clouds[cloudNumber].dataset.thoughtNumber = cloudNumber;
+    clouds[cloudNumber].style.visibility = cloudNumber > 3 ? "hidden" : "visible";
+    positionObject(cloudNumber, clouds[cloudNumber], CLOUD_TOP_SPACING, CLOUD_LEFT_SPACING, CLOUD_GAP);
+  }
 }
 function emotionRebuild(emotionBoxes, visibility) {
 
@@ -615,6 +632,7 @@ function appearingInputText() {
     }, 120);
   }
 }
+
 function sparkleEffect(sparkleing) {
 
   let sparkleInterval = null;
@@ -639,16 +657,21 @@ function sparkleEffect(sparkleing) {
     clearInterval(sparkleInterval);
   })
 }
-function counterAppearing(thoughtCounter, inputCounter) {
-  // thoughtCounter raises every cycle
-  thoughtCounter.textContent = inputCounter.toString() + "/" + MAX_THOUGHTS.toString();
+function updateThoughtCounter() {
+  const thoughtCounter = document.getElementById("thought-counter");
+  if (!thoughtCounter) return;
 
-  // thoughtCounter will wobble and goes green when MAX_THOUGHTS
-  if (inputCounter === MAX_THOUGHTS) {
+  thoughtCounter.textContent = thoughtsAndEmotions.length + "/" + MAX_THOUGHTS;
+
+  if (thoughtsAndEmotions.length >= MAX_THOUGHTS) {
     thoughtCounter.style.filter = "brightness(1.3)";
     thoughtCounter.classList.add("wobble");
+  } else {
+    thoughtCounter.style.filter = "";
+    thoughtCounter.classList.remove("wobble");
   }
 }
+
 function consumeEmotion() {
   const cloudReadyToEat = cloudInZone
   const eatEmotion = activeObject;
