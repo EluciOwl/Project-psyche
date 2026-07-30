@@ -652,7 +652,7 @@ function counterAppearing(thoughtCounter, inputCounter) {
 function consumeEmotion() {
   const cloudReadyToEat = cloudInZone
   const eatEmotion = activeObject;
-  const emotionTextCollect = eatEmotion.textContent
+  const emotionTextCollected = eatEmotion.querySelector(".emotion-text").textContent;
 
   eatEmotion.classList.remove("pulse")
   eatEmotion.classList.add("consumed")
@@ -664,13 +664,13 @@ function consumeEmotion() {
     cloudReadyToEat.getBoundingClientRect();   // force reflow
     cloudReadyToEat.classList.add("shiny");
 
-    currentThoughtEmotions.push(emotionTextCollect);
+    currentThoughtEmotions.push(emotionTextCollected);
     localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
   }
 
   eatEmotion.addEventListener("animationend", () => {
     eatEmotion.style.visibility = "hidden";
-    consumedEmotionArray.push(emotionTextCollect);
+    consumedEmotionArray.push(emotionTextCollected);
   }, { once: true });
 
   if (currentThoughtEmotions.length >= 1) {

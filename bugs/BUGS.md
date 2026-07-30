@@ -351,3 +351,16 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
   activeObject.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
 ```
 - **💡**: `%` on an absolutely positioned element is measured against its `offsetParent`, not the viewport. The moment you wrap positioned children in a positioned container, every `%` coordinate must be measured against that container.
+
+## 2026-07-30
+### **`JS`** - Emotion names ended up with a trailing "X" when saving
+
+- **🐛**: Pie chart showed saved emotions with attached letter "X".
+
+![emotion name with X pie chart](/bugs/bug-images/emotion-name-with-X-pie-chart.png)
+
+- **🔍**: `consumeEmotion()` read `.textContent` from the whole `.emotion-box`. After adding the remove button, the box held `<span>Happy</span>` + `<button>X</button>`, and `textContent` concatenates ALL descendants.
+
+- **🔧**: `eatEmotion.querySelector(".emotion-text").textContent` + cleared old localStorage.
+
+- **💡**: Adding a child element can silently break unrelated code that reads the parent. Always drill down to the exact element, never trust `textContent` on a container.
