@@ -736,15 +736,16 @@ body {
   flex-direction: column;
 }
 
-#pie-chart-style {
-  margin: 0 auto;
+#bar-chart-style {
+  margin: auto;
+  height: 80vh;
+  width: 50vw;
+  overflow-y: auto;
 
-  width: 30%;
-
-  filter: opacity(0.8);
+  filter: opacity(0.9);
 }
 
-#pie-chart-style:hover {
+#bar-chart-style:hover {
   cursor: pointer;
 }
 

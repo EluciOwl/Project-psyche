@@ -20,7 +20,7 @@ const thoughtInput = document.getElementById("thought-input-box");
 
 const MAX_THOUGHTS = 8;
 
-  // Start position -> clouds
+// Start position -> clouds
 const CLOUD_TOP_SPACING = 0;
 const CLOUD_LEFT_SPACING = 15;
 const CLOUD_GAP = 25;
@@ -343,7 +343,7 @@ function createEmotions() {
     dropObjectEmotion("touchend");
   }
 }
-function pieChart() {
+function barChart() {
   if (screenAnalyze) {
     const emotionTally = {};
 
@@ -363,21 +363,51 @@ function pieChart() {
       }
     }
 
-    const labels = Object.keys(emotionTally);
-    const numbers = Object.values(emotionTally);
-    const pieChartElement = document.getElementById("pie-chart");
+    const sorted = Object.entries(emotionTally).sort((entryA, entryB) => entryB[1] - entryA[1]);
+    const labels = sorted.map(entry => entry[0]);
+    const numbers = sorted.map(entry => entry[1]);
+    const barChartElement = document.getElementById("bar-chart");
 
-    const pieConfig = {
-      type: "pie",
+    const barConfig = {
+      type: "bar",
       data: {
         labels: labels,
-        datasets: [{ data: numbers }]
+        datasets: [{
+          label: "Times picked",
+          data: numbers,
+          backgroundColor: ["rgba(255, 0, 234, 0.85)", "rgba(195, 0, 255, 0.85)"],
+          borderRadius: 6
+        }]
+      },
+
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, color: "rgba(255, 255, 255, 0.85)" },
+            grid: { color: "rgba(255, 255, 255, 0.6)" }
+          },
+          y: {
+            ticks: {
+              color: "rgba(255, 255, 255, 0.85)",
+              autoSkip: false
+            },
+            grid: { display: false }
+          }
+        }
       }
     }
-
-    new Chart(pieChartElement, pieConfig)
+    new Chart(barChartElement, barConfig)
   }
 }
+
 function updateEmotion() {
   const emotionsInput = document.getElementById("emotions-input");
   const addEmotionButton = document.getElementById("add-emotion-button");
@@ -712,7 +742,7 @@ function init() {
   thoughtsRecreateOnDocEmotions();
   createEmotions();
   updateEmotion();
-  pieChart();
+  barChart();
 
   // Visual effects
   appearingInputText();
