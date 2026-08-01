@@ -151,7 +151,8 @@ function thoughtsRecreateOnDocEmotions() {
 
         cloudInZone.classList.remove("active-cloud");
         cloudInZone.classList.remove("shiny")
-        cloudInZone.classList.add("float-cloud");
+
+        cloudsSyncAnimation(thoughtsPanel);
       }
 
       cloudInZone.style.transform = "";
@@ -268,9 +269,17 @@ function createFloatingClouds(input, container) {
   cloud.appendChild(cloudRemoveButton);
   container.appendChild(cloud);
 
-  cloud.classList.add("float-cloud");
-  // give that value for the drag and drop catch later!
+  cloudsSyncAnimation(container);
+
   return cloud;
+}
+function cloudsSyncAnimation(scope) {
+  const clouds = scope.querySelectorAll(".thought-cloud");
+
+  if (clouds.length === 0) return;
+  clouds.forEach(cloud => cloud.classList.remove("float-cloud"));
+  clouds[0].getBoundingClientRect();
+  clouds.forEach(cloud => cloud.classList.add("float-cloud"));
 }
 function createEmotions() {
 
@@ -387,7 +396,7 @@ function barChart() {
         plugins: {
           legend: { display: false }
         },
-        
+
         scales: {
           x: {
             beginAtZero: true,
@@ -407,7 +416,6 @@ function barChart() {
     new Chart(barChartElement, barConfig)
   }
 }
-
 function updateEmotion() {
   const emotionsInput = document.getElementById("emotions-input");
   const addEmotionButton = document.getElementById("add-emotion-button");
@@ -441,10 +449,6 @@ function updateEmotion() {
 
     addEmotionButton.addEventListener("click", triggerAddEmotions);
     addEmotionButton.addEventListener("touchstart", triggerAddEmotions);
-
-    const emotionBoxes = document.querySelectorAll(".emotion-box");
-    const emotionRemove = document.querySelectorAll(".emotion-remove");
-
   }
 }
 
