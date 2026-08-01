@@ -184,16 +184,18 @@ function thoughtsRecreateOnDocEmotions() {
           thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
           localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
+          resetCloudPosition();
+
           saveCloud.addEventListener("animationend", (event) => {
             if (event.animationName !== "consumed") return;
             saveCloud.remove();
 
-            rebuildCloudPosition();
             resetZone(true);
             thoughtReleaseOrSave.classList.remove("consumed");
           })
         } else {
           resetZone(false);
+          resetCloudPosition();
         }
         emotionRebuild(emotionBoxes, "visible");
       })
@@ -252,7 +254,7 @@ function createFloatingClouds(input, container) {
     localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
     updateThoughtCounter();
-    rebuildCloudPosition();
+    resetCloudPosition();
   })
 
   let inputLength = input.replace(/ +/g, " ").length;
@@ -464,14 +466,15 @@ function positionObject(counterObject, rawObject, topSpacing, leftSpacing, gapBe
   rawObject.dataset.positionLeft = leftSpacing + "%";
   rawObject.style.left = rawObject.dataset.positionLeft;
 }
-function rebuildCloudPosition() {
+function resetCloudPosition() {
   if (!thoughtsPanel) return;
-
   const clouds = thoughtsPanel.querySelectorAll(".thought-cloud");
   for (let cloudNumber = 0; cloudNumber < clouds.length; cloudNumber++) {
     clouds[cloudNumber].dataset.thoughtNumber = cloudNumber;
     clouds[cloudNumber].style.visibility = cloudNumber > 3 ? "hidden" : "visible";
-    positionObject(cloudNumber, clouds[cloudNumber], CLOUD_TOP_SPACING, CLOUD_LEFT_SPACING, CLOUD_GAP);
+    if (!clouds[cloudNumber].classList.contains("active-cloud")) {
+      positionObject(cloudNumber, clouds[cloudNumber], CLOUD_TOP_SPACING, CLOUD_LEFT_SPACING, CLOUD_GAP);
+    }
   }
 }
 function emotionRebuild(emotionBoxes, visibility) {
@@ -580,8 +583,9 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         cloudInZone.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
         cloudInZone.style.transform = "translate(-50%, -50%)";
 
-        const emotionBoxes = document.querySelectorAll(".emotion-box");
+        resetCloudPosition();
 
+        const emotionBoxes = document.querySelectorAll(".emotion-box");
         // emotions exist -> reset to default state
         if (emotionBoxes.length > 0) {
           emotionRebuild(emotionBoxes, "visible")
