@@ -1,4 +1,5 @@
 // ----------------------------------- GLOBALS ----------------------------------- //
+const screenThoughts = document.querySelector(".screen-2-thoughts")
 const screenEmotions = document.querySelector(".screen-3-emotions");
 const screenAnalyze = document.querySelector(".screen-4-analyze");
 
@@ -6,6 +7,12 @@ const cloudDropZone = document.getElementById("cloud-drop-zone");
 
 const emotionsContainer = document.getElementById("emotions-container");
 const thoughtsPanel = document.getElementById("thoughts-panel");
+
+const emotionInput = document.getElementById("emotions-input");
+
+const sparkleEffekt = document.querySelector(".sparkle-effect");
+
+const RANDOM_EMOJIS = ["(≧◡≦)", "(*＾▽＾)／", "(≧ω≦)", "(=^･ω･^=)", "(* ´ ▽ ` *)"]
 
 let saveButtonOn = false;
 
@@ -90,25 +97,17 @@ function menuNavigation() {
 
 // ===== Page feature ===== //
 function featureThoughts() {
-  let sparkleEffectSwitch = true;
 
   const thoughtsContainer = document.getElementById("thoughts-container");
   const thoughtCounter = document.getElementById("thought-counter");
 
+  hoverSparkleEffect(screenThoughts, sparkleEffekt, "rgb(204, 73, 255)")
 
   if (thoughtInput) {
     let savedThoughtsJson = localStorage.getItem("thoughtsAndEmotions")
     thoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
     updateThoughtCounter();
-
-    function addThoughtsparkle() {
-      if (sparkleEffectSwitch) {
-        const sparkleVisual = document.getElementById("sparkle-effect");
-        sparkleEffect(sparkleVisual);
-        sparkleEffectSwitch = false;
-      }
-    }
 
     function addThought() {
       const cleanValue = thoughtInput.value.trim();
@@ -125,7 +124,6 @@ function featureThoughts() {
       thoughtInput.value = "";
     }
 
-    addThoughtsparkle();
 
     for (let cloudNumber = 0; cloudNumber < thoughtsAndEmotions.length; cloudNumber++) {
       createFloatingClouds(thoughtsAndEmotions[cloudNumber].thought, thoughtsContainer);
@@ -184,7 +182,7 @@ function thoughtsRecreateOnDocEmotions() {
           thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
           localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
-          resetCloudPosition();
+          resetCloudLayout();
 
           saveCloud.addEventListener("animationend", (event) => {
             if (event.animationName !== "consumed") return;
@@ -195,7 +193,7 @@ function thoughtsRecreateOnDocEmotions() {
           })
         } else {
           resetZone(false);
-          resetCloudPosition();
+          resetCloudLayout();
         }
         emotionRebuild(emotionBoxes, "visible");
       })
@@ -254,7 +252,7 @@ function createFloatingClouds(input, container) {
     localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
 
     updateThoughtCounter();
-    resetCloudPosition();
+    resetCloudLayout();
   })
 
   let inputLength = input.replace(/ +/g, " ").length;
@@ -291,6 +289,8 @@ function createEmotions() {
   const EMOTION_GAP = 15;
 
   const savedEmotions = localStorage.getItem("addEmotions")
+
+  hoverSparkleEffect(screenEmotions, sparkleEffekt, "rgba(255, 255, 255, 0.35)")
 
   if (savedEmotions === null) {
     totalEmotions = [...DEFAULT_EMOTIONS]
@@ -466,12 +466,13 @@ function positionObject(counterObject, rawObject, topSpacing, leftSpacing, gapBe
   rawObject.dataset.positionLeft = leftSpacing + "%";
   rawObject.style.left = rawObject.dataset.positionLeft;
 }
-function resetCloudPosition() {
+function resetCloudLayout() {
   if (!thoughtsPanel) return;
   const clouds = thoughtsPanel.querySelectorAll(".thought-cloud");
   for (let cloudNumber = 0; cloudNumber < clouds.length; cloudNumber++) {
     clouds[cloudNumber].dataset.thoughtNumber = cloudNumber;
     clouds[cloudNumber].style.visibility = cloudNumber > 3 ? "hidden" : "visible";
+    console.log(cloudNumber);
     if (!clouds[cloudNumber].classList.contains("active-cloud")) {
       positionObject(cloudNumber, clouds[cloudNumber], CLOUD_TOP_SPACING, CLOUD_LEFT_SPACING, CLOUD_GAP);
     }
@@ -583,7 +584,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         cloudInZone.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
         cloudInZone.style.transform = "translate(-50%, -50%)";
 
-        resetCloudPosition();
+        resetCloudLayout();
 
         const emotionBoxes = document.querySelectorAll(".emotion-box");
         // emotions exist -> reset to default state
@@ -651,28 +652,27 @@ function dropObjectEmotion(offEmotion) {
 }
 
 // ===== Visual effects ===== //
-function appearingInputText() {
-  if (thoughtInput) {
-    // creating the Text inside the textbox letter by letter
-    const fullText = "What's on your mind?";
+function appearingInputText(scope, texts, time) {
+  if (scope) {
+    const fullText = texts[Math.floor(Math.random() * texts.length)];
     let letters = 0;
 
-    // runs every 120ms
     const typing = setInterval(() => {
-      // from position 0, cut letters -> (0,3) = "Wha"
-      thoughtInput.placeholder = fullText.slice(0, letters);
+      scope.placeholder = fullText.slice(0, letters);
       letters++
 
-      // cut letters more than the whole Text?
       if (letters > fullText.length) {
         clearInterval(typing);
       }
-    }, 120);
+    }, time);
   }
 }
 
-function sparkleEffect(sparkleing) {
+function hoverSparkleEffect(scope, sparkleing, color) {
 
+  if (!scope || !sparkleing) return;
+  if (sparkleing.dataset.sparkle) return
+  sparkleing.dataset.sparkle = true;
   let sparkleInterval = null;
 
   sparkleing.addEventListener("mouseenter", () => {
@@ -684,7 +684,7 @@ function sparkleEffect(sparkleing) {
       particleDot.style.left = Math.random() * 100 + "%";
       // particles rise from bottom
       particleDot.style.bottom = "0px";
-      particleDot.style.background = "rgb(204, 73, 255)";
+      particleDot.style.background = color;
       // ad it to stage
       sparkleing.appendChild(particleDot);
       setTimeout(() => particleDot.remove(), 1000);
@@ -753,7 +753,12 @@ function init() {
   barChart();
 
   // Visual effects
-  appearingInputText();
+  appearingInputText(thoughtInput, ["What's on your mind?"], 150);
+  appearingInputText(emotionInput, RANDOM_EMOJIS, 200);
+
 }
 
 document.addEventListener("DOMContentLoaded", init)
+
+
+

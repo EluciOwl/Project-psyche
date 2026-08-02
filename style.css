@@ -165,7 +165,7 @@ body {
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 
-  color: rgba(204, 73, 255, 0.5);
+  color: rgba(255, 166, 251, 0.75);
 }
 
 #thought-counter.wobble {
@@ -196,13 +196,13 @@ body {
 
 #thought-input-box {
   background: transparent;
-  font-size: 3vw;
-  color: white;
+  font-size: 3.5vw;
+  color: rgba(255, 166, 251, 0.75);
 
   width: 50%;
   height: 80%;
 
-  border-radius: 2vw;
+  border-radius: 1vw;
   border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 20%, rgb(230, 104, 255) 80%) 20%, transparent);
   background:
     linear-gradient(rgba(245, 4, 253, 0.1), rgba(255, 65, 246, 0.05)) padding-box,
@@ -210,14 +210,22 @@ body {
 
   box-shadow: 10px 10px 2.5px rgba(204, 0, 255, 0.1);
 
-  filter: brightness(1.7);
   text-shadow: #cc49ff 1px 0 10px;
+}
+
+#thought-input-box::placeholder {
+  color: rgba(255, 166, 251, 0.75);
+  opacity: 1;
+  transition: color 0.25s ease;
+}
+
+#thought-input-box:focus::placeholder {
+  color: transparent;
+  text-shadow: none;
 }
 
 #thought-input-box:focus {
   outline: none;
-
-  filter: hue-rotate(10deg);
 
   background:
     linear-gradient(rgba(245, 4, 253, 0.05), rgba(255, 65, 246, 0.025)) padding-box,
@@ -230,7 +238,7 @@ body {
   height: 15vh;
   font-size: 12vh;
 
-  color: rgba(222, 139, 255, 0.5);
+  color: rgba(255, 166, 251, 0.75);
 
   display: flex;
   align-items: center;
@@ -247,13 +255,12 @@ body {
 }
 
 #add-thought-button:hover {
-  color: rgba(222, 139, 255, 0.425);
-  filter: saturate(1);
+  color: rgba(222, 139, 255, 0.9);
   box-shadow:
     0 0 20px rgba(174, 0, 255, 0.8),
     0 0 35px rgba(255, 71, 230, 0.8);
 
-  filter: brightness(1.8);
+  filter: brightness(1.25);
 
   transform: translateY(-1px);
   cursor: pointer;
@@ -267,13 +274,19 @@ body {
   outline: none;
 }
 
-#sparkle-effect {
+.sparkle-effect {
   position: relative;
-
+  height: 100%;
 }
 
-/* Creating little balls*/
-.particle {
+/* effect both buttons that get sparkle effect */
+.sparkle-effect > button {
+  box-sizing: border-box;  
+  width: 100%;
+  height: 100%;
+}
+
+.screen-2-thoughts .particle {
   position: absolute;
   width: 5px;
   height: 5px;
@@ -312,7 +325,7 @@ body {
 
 @keyframes float-cloud {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0%);
   }
 
   50% {
@@ -320,12 +333,12 @@ body {
   }
 
   100% {
-    transform: translateY(0px);
+    transform: translateY(0%);
   }
 }
 
 .float-cloud {
-  animation: float-cloud 6s ease-in-out infinite;
+  animation: float-cloud 5s ease-in-out infinite;
 }
 
 .thought-cloud img {
@@ -433,20 +446,25 @@ body {
 }
 
 #move-emotion-panel {
-  display: flex;
-  justify-content: flex-start;  
-  align-items: flex-start;
-  
+  display: flex; 
+  align-items: stretch;
   width: 80%;
   height: 7.5%;
-
   gap: 10%;
 }
 
-#emotions-input {
-  box-sizing: border-box;
+#move-emotion-panel .sparkle-effect {
+  flex: 0 0 20%;
+  min-width: 0;
   height: 100%;
-  width: 100%;
+}
+
+#emotions-input {
+box-sizing: border-box;
+  flex: 100% 100% 0;
+  min-width: 0;
+  width: auto;
+  height: 100%;
   border-radius: 0.5vw;
 
   font-size: 80%;
@@ -463,6 +481,19 @@ body {
   text-shadow: #cc49ff 1px 0 10px;
 }
 
+#emotions-input::placeholder {
+  color: white;
+  opacity: 1;
+  transition: color 0.5s ease;
+  text-align: center;
+}
+
+
+#emotions-input:focus::placeholder {
+  color: transparent;
+  text-shadow: none;
+}
+
 #emotions-input:focus {
   outline: none;
 
@@ -471,8 +502,18 @@ body {
     linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
 }
 
+
+.screen-3-emotions .particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sparkle 2.5s ease-out forwards;
+}
+
 #add-emotion-button {
-  width: 20%;
+  width: 100%;
   height: 100%;
 
   display: flex;
@@ -495,6 +536,7 @@ body {
   filter: drop-shadow(-2px 1px 5px rgb(255, 97, 255)) hue-rotate(50deg);
   text-shadow: #cc49ff 1px 0 10px;
 }
+
 
 #add-emotion-button:hover {
   box-shadow:
@@ -648,7 +690,8 @@ body {
   visibility: hidden;
 
   margin-top: 10%;
-  border: none;
+  border: dotted 2.5px;
+
 
   width: 45%;
   height: 10%;
@@ -659,16 +702,17 @@ body {
 
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-  color: rgb(255, 255, 255);
+  color: rgba(255, 166, 251, 0.9);
   background:
-    linear-gradient(rgba(245, 4, 253, 0.40), rgba(255, 65, 246, 0.40)) padding-box,
-    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.6), rgba(236, 93, 255, 0.2)) border-box;
+    linear-gradient(rgba(245, 4, 253, 0.20), rgba(255, 65, 246, 0.20)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.3), rgba(236, 93, 255, 0.1)) border-box;
+    
 }
 
 #thought-release-or-save:hover {
   cursor: pointer;
 
-  color: white;
+  color: rgba(255, 166, 251, 1);
   box-shadow:
     0 0 12px rgba(174, 0, 255, 0.7),
     0 0 24px rgba(255, 71, 230, 0.5);
