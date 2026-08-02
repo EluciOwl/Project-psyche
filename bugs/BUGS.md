@@ -370,3 +370,13 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔍**: `thoughtsAndEmotions` holds objects `{thought, emotions}`, but searched with `indexOf(cloudText.textContent)`, a string. No match, so it returned `-1` (convention) and `splice(-1, 1)` deleted the last entry. Deleting the last cloud worked by accident, which hid the bug.
 - **🔧**: Switched to `findIndex((entry) => entry.thought === cloudText.textContent)` and added a `!== -1` guard before splicing.
 - **💡**: `indexOf` compares by identity, so it only works for primitives. For objects use `findIndex` with a rule. And `splice` with a negative index counts from the end instead of failing, so a bad index deletes silently.
+
+
+
+## 2026-08-02
+### **`JS`** - Only 3 clouds visible after saving
+
+- **🐛**: After saving, the right column showed 3 clouds instead of 4. The 5th one only slid in once the next cloud was dropped in the zone.
+- **🔍**: `resetCloudLayout()` counts `.thought-cloud` in the DOM, but the saved cloud was still there animating. It ate slot 0, so all numbers shifted up by one and the last cloud landed on index > 3 and stayed hidden.
+- **🔧**: Query `".thought-cloud:not(.consumed)"` and call `resetCloudLayout()` right after the `splice()` instead of in `animationend`.
+- **💡**: Elements animating out are still in the DOM. Filter them out, or count from the state array.

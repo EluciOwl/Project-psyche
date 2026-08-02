@@ -468,7 +468,7 @@ function positionObject(counterObject, rawObject, topSpacing, leftSpacing, gapBe
 }
 function resetCloudLayout() {
   if (!thoughtsPanel) return;
-  const clouds = thoughtsPanel.querySelectorAll(".thought-cloud");
+  const clouds = thoughtsPanel.querySelectorAll(".thought-cloud:not(.consumed)");
   for (let cloudNumber = 0; cloudNumber < clouds.length; cloudNumber++) {
     clouds[cloudNumber].dataset.thoughtNumber = cloudNumber;
     clouds[cloudNumber].style.visibility = cloudNumber > 3 ? "hidden" : "visible";
