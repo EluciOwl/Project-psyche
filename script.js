@@ -172,12 +172,16 @@ function thoughtsRecreateOnDocEmotions() {
           const saveCloud = cloudInZone
           saveCloud.classList.add("consumed");
           saveCloud.classList.remove("shiny");
-          let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions")
+          let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions");
           savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
-          const thoughtToSave = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber]
-          savedThoughtsAndEmotions.push(thoughtToSave)
+          const thoughtToSave = thoughtsAndEmotions[saveCloud.dataset.thoughtNumber];
+          const todaysDate = new Date().toISOString().split("T")[0];
+          thoughtToSave.savedDate = todaysDate;
+          savedThoughtsAndEmotions.push(thoughtToSave);
           localStorage.setItem("savedThoughtsAndEmotions", JSON.stringify(savedThoughtsAndEmotions));
+
+
 
           thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
           localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
@@ -354,15 +358,18 @@ function createEmotions() {
     dropObjectEmotion("touchend");
   }
 }
-function barChart() {
+function barChart(days) {
   if (screenAnalyze) {
     const emotionTally = {};
 
-    let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions")
-    savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
+    let savedThoughtsAndEmotionsJson = localStorage.getItem("savedThoughtsAndEmotions")
+    savedThoughtsAndEmotions = JSON.parse(savedThoughtsAndEmotionsJson) || [];
 
-    for (let entrieEmotionsNumber = 0; entrieEmotionsNumber < savedThoughtsAndEmotions.length; entrieEmotionsNumber++) {
-      const currentEmotions = savedThoughtsAndEmotions[entrieEmotionsNumber].emotions
+    const cutoff = cutoffFromDays(days);
+    const keptEntries = savedThoughtsAndEmotions.filter(entry => entry.savedDate >= cutoff);
+
+    for (let entryEmotionsNumber = 0; entryEmotionsNumber < keptEntries.length; entryEmotionsNumber++) {
+      const currentEmotions = keptEntries[entryEmotionsNumber].emotions
 
       for (let emotionNumber = 0; emotionNumber < currentEmotions.length; emotionNumber++) {
         const thatEmotion = currentEmotions[emotionNumber]
@@ -472,7 +479,6 @@ function resetCloudLayout() {
   for (let cloudNumber = 0; cloudNumber < clouds.length; cloudNumber++) {
     clouds[cloudNumber].dataset.thoughtNumber = cloudNumber;
     clouds[cloudNumber].style.visibility = cloudNumber > 3 ? "hidden" : "visible";
-    console.log(cloudNumber);
     if (!clouds[cloudNumber].classList.contains("active-cloud")) {
       positionObject(cloudNumber, clouds[cloudNumber], CLOUD_TOP_SPACING, CLOUD_LEFT_SPACING, CLOUD_GAP);
     }
@@ -667,7 +673,6 @@ function appearingInputText(scope, texts, time) {
     }, time);
   }
 }
-
 function hoverSparkleEffect(scope, sparkleing, color) {
 
   if (!scope || !sparkleing) return;
@@ -709,7 +714,6 @@ function updateThoughtCounter() {
     thoughtCounter.classList.remove("wobble");
   }
 }
-
 function consumeEmotion() {
   const cloudReadyToEat = cloudInZone
   const eatEmotion = activeObject;
@@ -740,6 +744,17 @@ function consumeEmotion() {
   }
 }
 
+// ===== Helpers ===== //
+function cutoffFromDays(days) {
+  const cutoffDate = new Date()
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+  const cutoffString = cutoffDate.toISOString().split("T")[0];
+
+  return cutoffString;
+}
+
+
+
 // ----------------------------------- INITIALIZE ----------------------------------- //
 function init() {
   // Navigation
@@ -750,7 +765,7 @@ function init() {
   thoughtsRecreateOnDocEmotions();
   createEmotions();
   updateEmotion();
-  barChart();
+  barChart(0);
 
   // Visual effects
   appearingInputText(thoughtInput, ["What's on your mind?"], 150);
