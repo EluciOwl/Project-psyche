@@ -14,8 +14,15 @@
       src="assets/images/ai-generated/home-thoughts.png"
       alt="home">
   </button>
-  <div id="bar-chart-style">
-    <canvas id="bar-chart"></canvas>
+  <div id="chart-panel">
+    <select name="grr" id="select-list">
+      <option value="7">Last 7 days</option>
+      <option value="30">Last 30 days</option>
+      <option value="365">Last year</option>
+    </select>
+    <div id="bar-chart-style">
+      <canvas id="bar-chart"></canvas>
+    </div>
   </div>
 </body>
 </html>

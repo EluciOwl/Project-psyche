@@ -776,14 +776,76 @@ box-sizing: border-box;
 /* ========================= SCREEN 4 ========================= */
 .screen-4-analyze {
   background-image: url("assets/images/ai-generated/thoughts-background.png");
-  display: flex;
+}
+
+.screen-4-analyze .home-colored-button {
+  margin-left: auto;
+  margin-right: auto;
   flex-direction: column;
 }
 
-#bar-chart-style {
-  margin: auto;
+
+#chart-panel {
+  display: flex;
+
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5vh;
+
+  width: 80vw;
   height: 80vh;
-  width: 50vw;
+  gap: 2vw;
+
+  font-size: 1.5vw; 
+}
+
+#select-list {
+  height: 15%;
+  width: 30%;
+
+  font-size: 1.5em; 
+
+  border: 0.5vw solid color-mix(in srgb, color-mix(in hsl, hsl(261, 100%, 65%) 50%, rgb(230, 104, 255) 50%) 10%, transparent);
+
+  border-radius: 2vw;
+
+  color: rgba(222, 139, 255, 0.9);
+  background:
+    linear-gradient(rgba(245, 4, 253, 0.2), rgba(255, 65, 246, 0.2)) padding-box,
+    linear-gradient(45deg, rgba(255, 127, 80, 0), hwb(290 11% 0% / 0.6), rgba(236, 93, 255, 0.4)) border-box;
+
+  color-scheme: dark;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#select-list option {
+  font-size: 1.0em; 
+  font-weight: 600;
+
+  color: rgba(222, 139, 255, 0.9);
+  background-color: rgba(45, 10, 70, 0.85);
+}
+
+#select-list:hover {
+  color: rgba(222, 139, 255, 0.9);
+  box-shadow:
+    0 0 10px rgba(174, 0, 255, 0.8),
+    0 0 15px rgba(255, 71, 230, 0.8);
+
+  filter: brightness(1.25);
+  transform: translateY(-5px);
+  cursor: pointer;  
+}
+
+#select-list:focus {
+  outline: none;  
+}
+
+#bar-chart-style {
+  height: 80%;
+  width: 80%;
+
   overflow-y: auto;
 
   filter: opacity(0.9);
@@ -792,4 +854,5 @@ box-sizing: border-box;
 #bar-chart-style:hover {
   cursor: pointer;
 }
+
 

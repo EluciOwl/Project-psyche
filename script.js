@@ -386,6 +386,8 @@ function barChart(days) {
     const numbers = sorted.map(entry => entry[1]);
     const barChartElement = document.getElementById("bar-chart");
 
+    const responsiveFont = () => Math.round(window.innerWidth * 0.015);
+
     const barConfig = {
       type: "bar",
       data: {
@@ -406,16 +408,36 @@ function barChart(days) {
           legend: { display: false }
         },
 
+        animations: {
+          x: {
+            duration: 1200,
+            easing: "easeOutQuad",
+            from: (context) => context.chart.scales.x.getPixelForValue(0)
+          },
+
+          y: {
+            duration: 1200,
+            easing: "easeOutQuad",
+            from: (context) => context.chart.scales.y.getPixelForValue(0)
+          }
+        },
+
         scales: {
           x: {
+            border: { color: "rgba(255, 255, 255, 0.6)" },
             beginAtZero: true,
-            ticks: { stepSize: 1, color: "rgba(255, 255, 255, 0.85)" },
+            ticks: {
+              stepSize: 1,
+              color: "rgba(255, 255, 255, 0.85)",
+              font: () => ({ size: responsiveFont() })
+            },
             grid: { color: "rgba(255, 255, 255, 0.6)" }
           },
           y: {
             ticks: {
               color: "rgba(255, 255, 255, 0.85)",
-              autoSkip: false
+              autoSkip: false,
+              font: () => ({ size: responsiveFont() })
             },
             grid: { display: false }
           }
@@ -425,6 +447,7 @@ function barChart(days) {
     new Chart(barChartElement, barConfig)
   }
 }
+
 function updateEmotion() {
   const emotionsInput = document.getElementById("emotions-input");
   const addEmotionButton = document.getElementById("add-emotion-button");
@@ -774,6 +797,4 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init)
-
-
 
