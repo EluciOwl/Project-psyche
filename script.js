@@ -15,6 +15,7 @@ const sparkleEffekt = document.querySelector(".sparkle-effect");
 const RANDOM_EMOJIS = ["(≧◡≦)", "(*＾▽＾)／", "(≧ω≦)", "(=^･ω･^=)", "(* ´ ▽ ` *)"]
 
 let saveButtonOn = false;
+let isSaving = false;
 
 const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
 
@@ -166,9 +167,11 @@ function thoughtsRecreateOnDocEmotions() {
 
     if (thoughtReleaseOrSave) {
       thoughtReleaseOrSave.addEventListener("click", () => {
+        if (isSaving) return;
         const emotionBoxes = document.querySelectorAll(".emotion-box");
         if (saveButtonOn) {
           saveButtonOn = false;
+          isSaving = true; 
 
           thoughtReleaseOrSave.classList.add("consumed");
 
@@ -196,6 +199,7 @@ function thoughtsRecreateOnDocEmotions() {
             saveCloud.remove();
 
             resetZone(true);
+            isSaving = false;
             thoughtReleaseOrSave.classList.remove("consumed");
           })
         } else {
@@ -660,7 +664,7 @@ function dropObjectEmotion(offEmotion) {
 
     activeObject.style.cursor = "grab"
 
-    if (cloudInZone) {
+    if (cloudInZone && !isSaving) {
       const zoneRect = document.getElementById("cloud-drop-zone").getBoundingClientRect();
 
       if (event.touches) {

@@ -380,3 +380,17 @@ createFloatingClouds(thoughtsArray[thoughtsNumber], thoughtsCollectedContainer);
 - **🔍**: `resetCloudLayout()` counts `.thought-cloud` in the DOM, but the saved cloud was still there animating. It ate slot 0, so all numbers shifted up by one and the last cloud landed on index > 3 and stayed hidden.
 - **🔧**: Query `".thought-cloud:not(.consumed)"` and call `resetCloudLayout()` right after the `splice()` instead of in `animationend`.
 - **💡**: Elements animating out are still in the DOM. Filter them out, or count from the state array.
+
+## 2026-08-04
+### **`JS`** - Emotion drop during save animation breaks save flow
+
+- **🐛**: After clicking "Save", emotions could still be dropped on the cloud during its 1s consume animation, feeding a cloud that was already being removed caused the cloud snapped back into zone and the release/save button was hidden.
+
+![emotion drop during saving breaks save flow](/bugs/bug-gifs/emotion-drop-during-saving-breaks-save-flow.gif)
+- **🔍**: `cloudInZone` is only set to null on `animationend`, so during the animation `dropObjectEmotion` still saw a valid cloud in the zone.
+- **🔧**: Added `isSaving` flag: set true on save click, false on `animationend`, guard `dropObjectEmotion` with `!isSaving`.
+- **💡**: One flag per state: `saveButtonOn` = "next click saves", `isSaving` = "save in progress". Race conditions need the in-between state marked explicitly.
+- **👀**: Same window, second failure: double clicking the release/save button nulls `cloudInZone` early, so `animationend` crashes on `.style`. Same fix: `if (isSaving) return;` in the click handler.
+
+![double click save crash](/bugs/bug-images/double-click-save-crash.png)
+
