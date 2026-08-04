@@ -22,6 +22,9 @@ let thoughtsAndEmotions = [];
 let savedThoughtsAndEmotions = [];
 const consumedEmotionArray = [];
 
+const DEFAULT_CUTOFF = 7;
+let myBarChart = null;
+
 
 const thoughtInput = document.getElementById("thought-input-box");
 
@@ -360,6 +363,7 @@ function createEmotions() {
 }
 function barChart(days) {
   if (screenAnalyze) {
+    if (myBarChart) myBarChart.destroy();
     const emotionTally = {};
 
     let savedThoughtsAndEmotionsJson = localStorage.getItem("savedThoughtsAndEmotions")
@@ -444,7 +448,7 @@ function barChart(days) {
         }
       }
     }
-    new Chart(barChartElement, barConfig)
+    myBarChart = new Chart(barChartElement, barConfig)
   }
 }
 
@@ -775,7 +779,15 @@ function cutoffFromDays(days) {
 
   return cutoffString;
 }
+function barRangeChart() {
+  const selectList = document.getElementById("select-list");
+  if (!selectList) return;
 
+  selectList.addEventListener("change", () => {
+    const days = Number(selectList.value);
+    barChart(days);
+  });
+}
 
 
 // ----------------------------------- INITIALIZE ----------------------------------- //
@@ -788,7 +800,8 @@ function init() {
   thoughtsRecreateOnDocEmotions();
   createEmotions();
   updateEmotion();
-  barChart(0);
+  barChart(DEFAULT_CUTOFF);
+  barRangeChart();
 
   // Visual effects
   appearingInputText(thoughtInput, ["What's on your mind?"], 150);

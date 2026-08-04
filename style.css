@@ -690,7 +690,7 @@ box-sizing: border-box;
   visibility: hidden;
 
   margin-top: 10%;
-  border: dotted 2.5px;
+  border: dotted 2px rgba(255, 255, 255, 0.5);
 
 
   width: 45%;
@@ -712,12 +712,14 @@ box-sizing: border-box;
 #thought-release-or-save:hover {
   cursor: pointer;
 
-  color: rgba(255, 166, 251, 1);
+  border: dotted 3px rgba(255, 255, 255, 0.5);
+
   box-shadow:
     0 0 12px rgba(174, 0, 255, 0.7),
     0 0 24px rgba(255, 71, 230, 0.5);
 
-  filter: brightness(1.2);
+  filter: brightness(1.4);
+  transform: translateY(-5px);
 }
 
 
@@ -800,6 +802,8 @@ box-sizing: border-box;
 }
 
 #select-list {
+  margin-top: 1.5%;
+
   height: 15%;
   width: 30%;
 
