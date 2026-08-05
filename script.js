@@ -171,7 +171,7 @@ function thoughtsRecreateOnDocEmotions() {
         const emotionBoxes = document.querySelectorAll(".emotion-box");
         if (saveButtonOn) {
           saveButtonOn = false;
-          isSaving = true; 
+          isSaving = true;
 
           thoughtReleaseOrSave.classList.add("consumed");
 
@@ -333,8 +333,9 @@ function createEmotions() {
           const emotionPosition = totalEmotions.indexOf(emotionText.textContent);
           totalEmotions.splice(emotionPosition, 1);
           localStorage.setItem("addEmotions", JSON.stringify(totalEmotions));
-        })
 
+          recreateEmotions();
+        })
 
         emotionBox.appendChild(emotionText);
         emotionBox.appendChild(emotionRemove);
@@ -342,15 +343,12 @@ function createEmotions() {
 
         emotionBox.classList.add("pulse");
 
-
         const PER_COLUMN = 6;
         const COLUMN_WIDTH = 40;
 
         const column = Math.floor(emotionCounter / PER_COLUMN);
         const rowInColumn = emotionCounter % PER_COLUMN;
-
         const EMOTION_LEFT_SPACING = column * COLUMN_WIDTH;
-
 
         positionObject(rowInColumn, emotionBox, EMOTION_TOP_SPACING, EMOTION_LEFT_SPACING, EMOTION_GAP)
 
@@ -475,11 +473,7 @@ function updateEmotion() {
 
         emotionsInput.value = "";
 
-        const emotionBoxes = document.querySelectorAll(".emotion-box");
-        for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
-          emotionBoxes[emotionNumber].remove();
-        }
-        createEmotions();
+        recreateEmotions();
       }
     }
 
@@ -792,7 +786,13 @@ function barRangeChart() {
     barChart(days);
   });
 }
-
+function recreateEmotions() {
+  const emotionBoxes = document.querySelectorAll(".emotion-box");
+  for (let emotionNumber = 0; emotionNumber < emotionBoxes.length; emotionNumber++) {
+    emotionBoxes[emotionNumber].remove();
+  }
+  createEmotions();
+}
 
 // ----------------------------------- INITIALIZE ----------------------------------- //
 function init() {
