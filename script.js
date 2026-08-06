@@ -3,48 +3,39 @@ const screenThoughts = document.querySelector(".screen-2-thoughts")
 const screenEmotions = document.querySelector(".screen-3-emotions");
 const screenAnalyze = document.querySelector(".screen-4-analyze");
 
+const MAX_THOUGHTS = 8;
+const thoughtCounter = document.getElementById("thought-counter");
+const cloudsContainer = document.getElementById("clouds-container");
 const cloudDropZone = document.getElementById("cloud-drop-zone");
+const cloudMoveButton = document.getElementById("cloud-move-button");
+const thoughtInput = document.getElementById("thought-input");
 
+
+const MAX_EMOTIONS = 18;
+const DEFAULT_EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad", "Excited", "Guilty"]
 const emotionsContainer = document.getElementById("emotions-container");
-const thoughtsPanel = document.getElementById("thoughts-panel");
-
+const INPUT_EMOJIS = ["(≧◡≦)", "(*＾▽＾)／", "(≧ω≦)", "(=^･ω･^=)", "(* ´ ▽ ` *)"]
 const emotionInput = document.getElementById("emotions-input");
+let totalEmotions = [];
 
-const sparkleEffekt = document.querySelector(".sparkle-effect");
-
-const RANDOM_EMOJIS = ["(≧◡≦)", "(*＾▽＾)／", "(≧ω≦)", "(=^･ω･^=)", "(* ´ ▽ ` *)"]
 
 let saveButtonOn = false;
 let isSaving = false;
 
-const thoughtReleaseOrSave = document.getElementById("thought-release-or-save");
+
+const sparkleEffekt = document.querySelector(".sparkle-effect");
+
 
 let thoughtsAndEmotions = [];
 let savedThoughtsAndEmotions = [];
-const consumedEmotionArray = [];
-
-const DEFAULT_CUTOFF = 7;
-let myBarChart = null;
+const consumedEmotion = [];
 
 
-const thoughtInput = document.getElementById("thought-input-box");
-
-const MAX_THOUGHTS = 8;
 
 // Start position -> clouds
 const CLOUD_TOP_SPACING = 0;
 const CLOUD_LEFT_SPACING = 15;
 const CLOUD_GAP = 25;
-
-const addThoughtButton = document.getElementById("add-thought-button");
-
-
-// Amount of useable emotions
-const MAX_EMOTIONS = 18;
-const DEFAULT_EMOTIONS = ["Happy", "Lonely", "Calm", "Ashamed", "Proud", "Anxious", "Hopeful", "Angry", "Loved", "Sad", "Excited", "Guilty"]
-let totalEmotions = [];
-
-
 // position on specific box
 let offsetX = 0;
 let offsetY = 0;
@@ -53,10 +44,14 @@ let offsetYEmotionsContainer = 0;
 let offsetXThoughtsPanel = 0;
 let offsetYThoughtsPanel = 0;
 
-// Default state
+
+// Default Object state
 let activeObject = null;
 let cloudInZone = null;
 let isDragging = false;
+
+const DEFAULT_CUTOFF = 7;
+let myBarChart = null;
 
 
 // ----------------------------------- FUNCTIONS ----------------------------------- //
@@ -101,13 +96,13 @@ function menuNavigation() {
 
 // ===== Page feature ===== //
 function featureThoughts() {
-
   const thoughtsContainer = document.getElementById("thoughts-container");
-  const thoughtCounter = document.getElementById("thought-counter");
 
-  hoverSparkleEffect(screenThoughts, sparkleEffekt, "rgb(204, 73, 255)")
+  hoverSparkleEffect(addThoughtButton, sparkleEffekt, "rgb(204, 73, 255)")
 
   if (thoughtInput) {
+    const addThoughtButton = document.getElementById("add-thought-button");
+
     let savedThoughtsJson = localStorage.getItem("thoughtsAndEmotions")
     thoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
@@ -142,7 +137,7 @@ function featureThoughts() {
   }
 }
 function thoughtsRecreateOnDocEmotions() {
-  if (thoughtsPanel) {
+  if (cloudsContainer) {
     let thoughtsJson = localStorage.getItem("thoughtsAndEmotions");
     thoughtsAndEmotions = JSON.parse(thoughtsJson) || [];
 
@@ -154,26 +149,26 @@ function thoughtsRecreateOnDocEmotions() {
         cloudInZone.classList.remove("active-cloud");
         cloudInZone.classList.remove("shiny")
 
-        cloudsSyncAnimation(thoughtsPanel);
+        cloudsSyncAnimation(cloudsContainer);
       }
 
       cloudInZone.style.transform = "";
       cloudDropZone.style.visibility = "";
-      thoughtReleaseOrSave.style.visibility = "";
+      cloudMoveButton.style.visibility = "";
       cloudInZone = null;
 
-      thoughtReleaseOrSave.textContent = "Release";
+      cloudMoveButton.textContent = "Release";
     }
 
-    if (thoughtReleaseOrSave) {
-      thoughtReleaseOrSave.addEventListener("click", () => {
+    if (cloudMoveButton) {
+      cloudMoveButton.addEventListener("click", () => {
         if (isSaving) return;
         const emotionBoxes = document.querySelectorAll(".emotion-box");
         if (saveButtonOn) {
           saveButtonOn = false;
           isSaving = true;
 
-          thoughtReleaseOrSave.classList.add("consumed");
+          cloudMoveButton.classList.add("consumed");
 
           const saveCloud = cloudInZone
           saveCloud.classList.add("consumed");
@@ -200,7 +195,7 @@ function thoughtsRecreateOnDocEmotions() {
 
             resetZone(true);
             isSaving = false;
-            thoughtReleaseOrSave.classList.remove("consumed");
+            cloudMoveButton.classList.remove("consumed");
           })
         } else {
           resetZone(false);
@@ -212,7 +207,7 @@ function thoughtsRecreateOnDocEmotions() {
 
     for (let thoughtCounter = 0; thoughtCounter < thoughtsAndEmotions.length; thoughtCounter++) {
 
-      const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, thoughtsPanel);
+      const cloud = createFloatingClouds(thoughtsAndEmotions[thoughtCounter].thought, cloudsContainer);
       cloud.dataset.thoughtNumber = thoughtCounter
 
       if (thoughtCounter > 3) {
@@ -228,8 +223,8 @@ function thoughtsRecreateOnDocEmotions() {
     moveObject("mousemove");
     moveObject("touchmove");
 
-    dropObjectCloud("mouseup", cloudDropZone, thoughtReleaseOrSave, "active-cloud");
-    dropObjectCloud("touchend", cloudDropZone, thoughtReleaseOrSave, "active-cloud");
+    dropObjectCloud("mouseup", cloudDropZone, cloudMoveButton, "active-cloud");
+    dropObjectCloud("touchend", cloudDropZone, cloudMoveButton, "active-cloud");
   }
 }
 
@@ -499,8 +494,8 @@ function positionObject(counterObject, rawObject, topSpacing, leftSpacing, gapBe
   rawObject.style.left = rawObject.dataset.positionLeft;
 }
 function resetCloudLayout() {
-  if (!thoughtsPanel) return;
-  const clouds = thoughtsPanel.querySelectorAll(".thought-cloud:not(.consumed)");
+  if (!cloudsContainer) return;
+  const clouds = cloudsContainer.querySelectorAll(".thought-cloud:not(.consumed)");
   for (let cloudNumber = 0; cloudNumber < clouds.length; cloudNumber++) {
     clouds[cloudNumber].dataset.thoughtNumber = cloudNumber;
     clouds[cloudNumber].style.visibility = cloudNumber > 3 ? "hidden" : "visible";
@@ -539,7 +534,7 @@ function pressObject(on, rawObject) {
     // Every press changes position -> new dimensions needed
     const rectObject = rawObject.getBoundingClientRect();
     const rectEmotionsContainer = emotionsContainer.getBoundingClientRect();
-    const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
+    const rectThoughtsPanel = cloudsContainer.getBoundingClientRect();
 
     const pointX = event.touches ? event.touches[0].clientX : event.clientX;
     const pointY = event.touches ? event.touches[0].clientY : event.clientY;
@@ -567,7 +562,7 @@ function moveObject(move) {
       activeObject.style.left = ((pointX - offsetX - offsetXEmotionsContainer) / rectEmotionsContainer.width) * 100 + "%";
       activeObject.style.top = ((pointY - offsetY - offsetYEmotionsContainer) / rectEmotionsContainer.height) * 100 + "%";
     } else {
-      const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
+      const rectThoughtsPanel = cloudsContainer.getBoundingClientRect();
       activeObject.style.left = ((pointX - offsetX - offsetXThoughtsPanel) / rectThoughtsPanel.width) * 100 + "%";
       activeObject.style.top = ((pointY - offsetY - offsetYThoughtsPanel) / rectThoughtsPanel.height) * 100 + "%";
     }
@@ -610,7 +605,7 @@ function dropObjectCloud(offCloud, dropZone, releaseButton, activeClass) {
         // centering
         cloudInZone.classList.remove("float-cloud")
 
-        const rectThoughtsPanel = thoughtsPanel.getBoundingClientRect();
+        const rectThoughtsPanel = cloudsContainer.getBoundingClientRect();
         cloudInZone.style.left = ((centerX - rectThoughtsPanel.left) / rectThoughtsPanel.width) * 100 + "%";
         cloudInZone.style.top = ((centerY - rectThoughtsPanel.top) / rectThoughtsPanel.height) * 100 + "%";
         cloudInZone.style.transform = "translate(-50%, -50%)";
@@ -726,7 +721,6 @@ function hoverSparkleEffect(scope, sparkleing, color) {
   })
 }
 function updateThoughtCounter() {
-  const thoughtCounter = document.getElementById("thought-counter");
   if (!thoughtCounter) return;
 
   thoughtCounter.textContent = thoughtsAndEmotions.length + "/" + MAX_THOUGHTS;
@@ -760,11 +754,11 @@ function consumeEmotion() {
 
   eatEmotion.addEventListener("animationend", () => {
     eatEmotion.style.visibility = "hidden";
-    consumedEmotionArray.push(emotionTextCollected);
+    consumedEmotion.push(emotionTextCollected);
   }, { once: true });
 
   if (currentThoughtEmotions.length >= 1) {
-    thoughtReleaseOrSave.textContent = "Save";
+    cloudMoveButton.textContent = "Save";
     saveButtonOn = true;
   }
 }
@@ -794,6 +788,7 @@ function recreateEmotions() {
   createEmotions();
 }
 
+
 // ----------------------------------- INITIALIZE ----------------------------------- //
 function init() {
   // Navigation
@@ -809,7 +804,7 @@ function init() {
 
   // Visual effects
   appearingInputText(thoughtInput, ["What's on your mind?"], 150);
-  appearingInputText(emotionInput, RANDOM_EMOJIS, 200);
+  appearingInputText(emotionInput, INPUT_EMOJIS, 200);
 
 }
 

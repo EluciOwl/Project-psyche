@@ -194,7 +194,7 @@ body {
   }
 }
 
-#thought-input-box {
+#thought-input {
   background: transparent;
   font-size: 3.5vw;
   color: rgba(255, 166, 251, 0.75);
@@ -213,18 +213,18 @@ body {
   text-shadow: #cc49ff 1px 0 10px;
 }
 
-#thought-input-box::placeholder {
+#thought-input::placeholder {
   color: rgba(255, 166, 251, 0.75);
   opacity: 1;
   transition: color 0.25s ease;
 }
 
-#thought-input-box:focus::placeholder {
+#thought-input:focus::placeholder {
   color: transparent;
   text-shadow: none;
 }
 
-#thought-input-box:focus {
+#thought-input:focus {
   outline: none;
 
   background:
@@ -549,6 +549,7 @@ box-sizing: border-box;
 }
 
 #emotions-container {
+  container-type: inline-size;  
   width: 90%;
   height: 60%;
 
@@ -590,7 +591,7 @@ box-sizing: border-box;
 
 
 .emotion-text {
-  font-size: 1.1vw;
+  font-size: 3cqw;
 }
 
 .emotion-remove{
@@ -672,7 +673,7 @@ box-sizing: border-box;
 }
 
 
-#thoughts-panel {
+#clouds-container {
   width: 30%;
   height: 70%;
 
@@ -686,7 +687,7 @@ box-sizing: border-box;
   position: absolute;
 }
 
-#thought-release-or-save {
+#cloud-move-button {
   visibility: hidden;
 
   margin-top: 10%;
@@ -709,7 +710,7 @@ box-sizing: border-box;
     
 }
 
-#thought-release-or-save:hover {
+#cloud-move-button:hover {
   cursor: pointer;
 
   border: dotted 3px rgba(255, 255, 255, 0.5);
