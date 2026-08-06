@@ -98,10 +98,9 @@ function menuNavigation() {
 function featureThoughts() {
   const thoughtsContainer = document.getElementById("thoughts-container");
 
-  hoverSparkleEffect(addThoughtButton, sparkleEffekt, "rgb(204, 73, 255)")
-
   if (thoughtInput) {
     const addThoughtButton = document.getElementById("add-thought-button");
+    hoverSparkleEffect(addThoughtButton, sparkleEffekt, "rgb(204, 73, 255)")
 
     let savedThoughtsJson = localStorage.getItem("thoughtsAndEmotions")
     thoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
@@ -116,24 +115,19 @@ function featureThoughts() {
 
       thoughtsAndEmotions.push({ thought: cleanValue, emotions: [] });
       localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
-
-      updateThoughtCounter();
-
-      // clearing the text-field
+      
       thoughtInput.value = "";
+      updateThoughtCounter();
     }
 
+    thoughtsAndEmotions.forEach(entry => createFloatingClouds(entry.thought, thoughtsContainer));
 
-    for (let cloudNumber = 0; cloudNumber < thoughtsAndEmotions.length; cloudNumber++) {
-      createFloatingClouds(thoughtsAndEmotions[cloudNumber].thought, thoughtsContainer);
-    }
     // Press Enter -> thought counter + 1, create cloud
     thoughtInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") addThought();
     });
 
     addThoughtButton.addEventListener("click", addThought);
-    addThoughtButton.addEventListener("touchstart", addThought);
   }
 }
 function thoughtsRecreateOnDocEmotions() {
@@ -146,8 +140,7 @@ function thoughtsRecreateOnDocEmotions() {
         cloudInZone.style.top = cloudInZone.dataset.positionTop;
         cloudInZone.style.left = cloudInZone.dataset.positionLeft;
 
-        cloudInZone.classList.remove("active-cloud");
-        cloudInZone.classList.remove("shiny")
+        cloudInZone.classList.remove("active-cloud", "shiny");
 
         cloudsSyncAnimation(cloudsContainer);
       }
@@ -173,6 +166,7 @@ function thoughtsRecreateOnDocEmotions() {
           const saveCloud = cloudInZone
           saveCloud.classList.add("consumed");
           saveCloud.classList.remove("shiny");
+          
           let savedThoughtsJson = localStorage.getItem("savedThoughtsAndEmotions");
           savedThoughtsAndEmotions = JSON.parse(savedThoughtsJson) || [];
 
@@ -181,8 +175,6 @@ function thoughtsRecreateOnDocEmotions() {
           thoughtToSave.savedDate = todaysDate;
           savedThoughtsAndEmotions.push(thoughtToSave);
           localStorage.setItem("savedThoughtsAndEmotions", JSON.stringify(savedThoughtsAndEmotions));
-
-
 
           thoughtsAndEmotions.splice(saveCloud.dataset.thoughtNumber, 1);
           localStorage.setItem("thoughtsAndEmotions", JSON.stringify(thoughtsAndEmotions));
